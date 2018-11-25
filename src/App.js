@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import logo from './logo.svg';
-import './App.scss';
+import './App.sass';
+
+import 'bootstrap/dist/css/bootstrap.css';
 
 // define the width and height, in number of squares
 const gameWidth = 12;
@@ -774,6 +776,7 @@ class GameSpace extends React.Component{
     
     const startGameButtonStyle = {
       color: 'black',
+      backgroundColor: 'white',
       fontSize: 20,
       width: 130,
       height: 40,
