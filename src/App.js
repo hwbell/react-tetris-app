@@ -1,349 +1,36 @@
+// modules
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import logo from './logo.svg';
-import './App.sass';
 
+// styling
 import 'bootstrap/dist/css/bootstrap.css';
+import styles from './App.styles';
 
-// define the width and height, in number of squares
-const gameWidth = 12;
-const gameHeight = 22;
+// components
+import NextPieceDisplay from './Components/NextPieceDisplay';
 
-// define the width/height of squares, in pixels
-const squareSize = 25;
+// constants
+import constants from './Constants/gameConstants';
 
-// define canvas size according to squaresize
-const canvasWidth = squareSize*gameWidth+ 0.5*squareSize;
-const canvasHeight = squareSize*gameHeight+ 0.5*squareSize;
-
-// colors for GameSquares
-const background = 'black';
-const pieceColor = "#FF7043";
-const borderColor = 'black';
-
-// define colorset and a function to pull one randomly for each move 
-const squareColors = [ // using material design chart from https://htmlcolorcodes.com/color-chart/
-  '#E91E63',
-  '#9C27B0',
-  '#3F51B5',
-  '#2196F3',
-  '#00BCD4',
-  '#009688',
-  '#8BC34A',
-  '#FFEB3B',
-  '#FFC107',
-  '#FF5722',
-]
-
-const getRandomColor = (colorList) => {
-  let ind = Math.floor(Math.random() * 10);
-  return colorList[ind];
-}
-
-// to assign square objects for each place in the grid
-function GameSquare(i, j) {
-  
-  let maxRow = gameHeight-1;
-  let maxCol = gameWidth-1;
-  this.x = j*squareSize + 0.5*squareSize;
-  this.y = i*squareSize + 0.5*squareSize;
-  this.row = i;
-  this.column = j;
-  
-  let borderRow = i === 0 || i === maxRow;
-  let borderCol = j === 0 || j === maxCol;
-  this.bgColor = borderRow || borderCol ? borderColor : background;
-  
-  // set the type of border squares to border
-  if (borderRow || borderCol) {
-    this.type = "border";
-  }
-  // set the type to floor for the bottom most row of the remaining squares
-  else if (i === maxRow ) {
-    this.type = "floor";
-  } 
-  // set the type to background for all other squares
-  else { 
-    this.type = "background";
-  }
-  
-}
-
-const makeGameArray = (width, height) => {
-  let gameArray = [];
-  for ( let i = 0; i<height; i++) {
-    let thisRow = [];
-    for (let j=0; j<width; j++) {
-      let thisSquare = new GameSquare(i,j);
-      thisRow.push(thisSquare);
-    }
-    gameArray.push(thisRow);
-  }
-  return gameArray;
-}
-
-// retrieve the current floor pieces from the current board
-const getFloorFromBoard = (board) => {
-  // we will make the floor the same as the board, a 24 x 14 array.
-  // with only floor pieces kept. so if no floor pieces in row, that
-  // row is just an empty array
-  let currentBoard = JSON.parse(JSON.stringify(board));
-  let floor = currentBoard.map((row) => {
-    return row.filter((square) => {
-      return square.type === 'floor';
-    });
-  });
-  
-  return [].concat.apply([], floor);
-}
-
-// make the initial floor with the bottom row of squares
-const makeInitialFloor = (width) => {
-  let floor = {};
-  floor.squares = [];
-  
-  for ( let i=1; i<width-1; i++ ) {
-    floor.squares.push([gameHeight-1, i]);  
-  }
-  return floor;
-}
-
-
-const detectContact = (piece, floor) => {
-  //console.log(floor)
-  // for contact, the column of the square in question must be the same as a floor square, and the row must be  -1 from the same floor square
-  // EX -   [P]     P=piece    Pcol = Fcol and Prow = Frow-1
-  //        [F]     F=floor
-
-  // check all piece's squares and if any of them are in contact with any of the floor, return true
-  // for each square of the piece, we need to see if currentBoard[row+1][col].type === "floor"
-  
-  for ( let i=0; i<piece.squares.length; i++) {
-    
-    let matchingRow = piece.squares[i][0] + 1;
-    let matchingCol = piece.squares[i][1];
-    //console.log(matchingRow, matchingCol)
-    for ( let j=0; j<floor.squares.length; j++) {
-      let floorRow = floor.squares[j][0];
-      let floorCol = floor.squares[j][1];
-      // console.log(`piece.squares[i]: ${piece.squares[i]}`)
-      // console.log(`floor[j]: ${floor.squares[j]}`)
-      
-      if ( floorRow === matchingRow && floorCol === matchingCol ) {
-        //console.log("yep")
-        return true;
-      }
-    }
-  }
-  
-  return false;
-}
-  
-const isRowContinuousFloor = (row) => {  
-  
-  for ( let i=0; i<row.length; i++) {
-    let square = row[i];
-    
-    if (square.row === 0 || square.row === gameHeight-1) {
-      //console.log(`row is part of border`)
-      return false;
-    }
-    
-    let isborderCol = i === 0 || i === gameWidth-1;
-    
-    // check if borderCol, or if it is part of the floor
-    if (!isborderCol && square.type !== 'floor') {
-      return false;
-    }
-  }
-  return true;
-}
-
-// need to shift the board above complete lines when 
-// lines are removed
-const shiftBoard = (board, belowRow) => {
-  let newBoard = JSON.parse(JSON.stringify(board));
-  
-  newBoard.forEach( (row, i) => {
-    if (i <= belowRow && i > 1) {
-      row.forEach((square) => {
-        let newRow = square.row+1;
-        square.y = newRow*squareSize + 0.5*squareSize;
-        square.row = newRow;
-      });
-    }
-  });
-  return newBoard;
-}
-
-const shiftFloor = (floor, belowRow) => {
-  let newFloor = JSON.parse(JSON.stringify(floor));
-  for ( let i=0; i<newFloor.squares.length; i++) {
-    if (newFloor.squares[i][0] <= belowRow && newFloor.squares[i][0] > 0) {
-      newFloor.squares[i][0]++;
-    }
-  }
-  return newFloor;
-}
-
-const removeCompleteLines = (board, floor) => {
-  console.log('checking for complete lines')
-  
-  let lines = 0;
-  let points = 0;
-  
-  // copy the board and floor
-  let newBoard = JSON.parse(JSON.stringify(board));
-  let newFloor = JSON.parse(JSON.stringify(floor));
-  let newFloorSquares = newFloor.squares;
-  // create empty row to add whenever a complete row is found
-  let emptyRow = [];
-  for (let j=0; j<gameWidth; j++) {
-    let newSquare = new GameSquare(1,j);
-    emptyRow.push(newSquare);
-  }
-  
-  // check each row for completion
-  newBoard.forEach((row, i) => {
-    if ( isRowContinuousFloor(row) ) {
-      console.log("found continuous row")
-      
-      lines++;
-      points = lines*25;
-      // remove the row array from the board array, and insert
-      // a new empty one @ row 1
-      newBoard.splice(i,1);
-      newBoard.splice(1, 0, emptyRow);   
-      newBoard = shiftBoard(newBoard, i);
-      
-      newFloor.squares.forEach( (square) => {
-        if (square[0] === i) {
-          newFloor.squares.splice(i,1)
-        }
-      });
-      newFloor = shiftFloor(newFloor, i);
-    }
-  });
-  
-  //console.log(newBoard)
-  console.log(`lines: ${lines}`)
-  return [newBoard, newFloor, lines, points];
-}
-
-// Define the pieces as objects according to a given center coordinates
-// *** Using this site as a reference for the piece names: https://tetris.wiki/Tetromino
-
-// base square to inherit properties of centerRow, centerCol, and random color
-function baseSquare (centerRow, centerCol) {
-  this.centerRow = centerRow;
-  this.centerCol = centerCol;
-  
-  // random color from list. Just change array of colors to change style
-  this.bgColor = getRandomColor(squareColors);
-}
-
-function dummy (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol)
-}
-
-// straight line - [ ]
-                // [*] centered at top - 1
-                // [ ]
-                // [ ]
-function I (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol);
-  this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow+1, centerCol],[centerRow+2, centerCol]];
-}
-
-// simple square - [ ] [ ] centered at bottom left
-                // [*] [ ]
-function O (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol);
-  this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow-1, centerCol+1],[centerRow, centerCol+1]];
-}
-
-// upside down T -     [ ]     centered at bottom middle 
-              //   [ ] [*] [ ]
-function T (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol);
-  this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow, centerCol-1],[centerRow, centerCol+1]];
-}
-
-// S shape -     [ ] [ ]   centered at bottom
-        //   [ ] [*] 
-function S (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol);
-  this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow-1, centerCol+1],[centerRow, centerCol-1]];
-}
-
-// S shape -  [ ] [ ]      centered at bottom
-        //        [*] [ ]
-function Z (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol);
-  this.squares = [[centerRow, centerCol],[centerRow-1, centerCol-1],[centerRow-1, centerCol],[centerRow, centerCol+1]];
-}
-
-// J shape -  [ ]          centered at bottom middle
-        //    [ ] [*] [ ]
-function J (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol);
-  this.squares = [[centerRow, centerCol],[centerRow-1, centerCol-1],[centerRow, centerCol-1],[centerRow, centerCol+1]];
-}
-
-// L shape -          [ ]  centered at bottom middle
-        //    [ ] [*] [ ]
-function L (centerRow, centerCol) {
-  baseSquare.call(this, centerRow, centerCol);
-  this.squares = [[centerRow, centerCol],[centerRow, centerCol-1],[centerRow, centerCol+1],[centerRow-1, centerCol+1]];
-}
-
-// to randomly choose from the pieces I, O, T, S, Z, J, L
-const getNewPieceFunction = () => {
-  let num = Math.random();
-  let odds = 1/7;
-  let piece = {};
-  
-  if (num > 1-odds*1) {
-    return I; 
-  }
-  
-  else if (num > 1-odds*2) {
-    return O; 
-  }
-  
-  else if (num > 1-odds*3) {
-    return T; 
-  }
-  
-  else if (num > 1-odds*4) {
-    return S; 
-  }
-  
-  else if (num > 1-odds*5) {
-    return Z; 
-  }
-  
-  else if (num > 1-odds*6) {
-    return J; 
-  }
-  
-  else {
-    return L; 
-  }
-  
-}
+import {
+  makeGameArray,
+  makeInitialFloor,
+  detectContact,
+  removeCompleteLines,
+  getNewPieceFunction,
+} from './Functions/gamePlayFunctions';
 
 const getInitialState = () => {
   var initialStateObj = {
-    canvasWidth: canvasWidth,
-    canvasHeight: canvasHeight,
-    gameWidth: gameWidth,
-    gameHeight: gameHeight,
-    squareSize: squareSize,
-    board: makeGameArray(gameWidth, gameHeight),
-    boardFloor: makeInitialFloor(gameWidth),
+    canvasWidth: constants.canvasWidth,
+    canvasHeight: constants.canvasHeight,
+    gameWidth: constants.gameWidth,
+    gameHeight: constants.gameHeight,
+    squareSize: constants.squareSize,
+    board: makeGameArray(constants.gameWidth, constants.gameHeight),
+    boardFloor: makeInitialFloor(constants.gameWidth),
     centerRow: 0,
-    centerCol: Math.floor(gameWidth/2),
+    centerCol: Math.floor(constants.gameWidth/2),
     intervalTimer: null,
     gameSpeed: 300,
     lines: 0,
@@ -358,8 +45,8 @@ const getInitialState = () => {
   let nextPieceFunction = getNewPieceFunction();
   
   // get new pieces for the first drop
-  initialStateObj.currentPiece = new pieceFunction(2, Math.floor(gameWidth/2));
-  initialStateObj.nextPiece = new nextPieceFunction(2, Math.floor(gameWidth/2));
+  initialStateObj.currentPiece = new pieceFunction(2, Math.floor(constants.gameWidth/2));
+  initialStateObj.nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth/2));
   
   // another copy of the next piece for the display
   initialStateObj.nextPieceDisplay = new nextPieceFunction(4, 3);
@@ -386,12 +73,13 @@ class GameSpace extends React.Component{
   focusDiv(selector) {
     console.log(`focusing on ${selector}`)
     ReactDOM.findDOMNode(selector).focus();
+    ReactDOM.findDOMNode(selector).focus();
   }
 
   // to fill in individual squares of the canvas according to state
   drawSquare (centerRow, centerCol, color, ctx) {
     ctx.fillStyle = color;
-    ctx.fillRect(centerRow, centerCol, squareSize, squareSize);
+    ctx.fillRect(centerRow, centerCol, constants.squareSize, constants.squareSize);
   }
   
   redrawCanvas () {
@@ -463,7 +151,7 @@ class GameSpace extends React.Component{
     // clear the currentPiece off of the board
     this.state.currentPiece.squares.forEach((square) => {
       //console.log(`clearing ${square[0]}, ${square[1]}`)
-      currentBoard[square[0]][square[1]].bgColor = background;
+      currentBoard[square[0]][square[1]].bgColor = constants.backgroundColor;
     });
     
     let rotatedSquares = currentPiece.squares.map((square) => {
@@ -555,7 +243,7 @@ class GameSpace extends React.Component{
 
     // clear the currentPiece from the board
     this.state.currentPiece.squares.forEach((square) => {
-      currentBoard[square[0]][square[1]].bgColor = background;
+      currentBoard[square[0]][square[1]].bgColor = constants.backgroundColor;
     });
     
     let movedSquares;
@@ -670,7 +358,7 @@ class GameSpace extends React.Component{
     
     //  get the new Pieces to start over with
     let nextPieceFunction = getNewPieceFunction();
-    let nextPiece = new nextPieceFunction(2, Math.floor(gameWidth/2));
+    let nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth/2));
     let nextPieceDisplay = new nextPieceFunction(4, 3);
     nextPieceDisplay.bgColor = nextPiece.bgColor;
     
@@ -680,7 +368,7 @@ class GameSpace extends React.Component{
         nextPiece: nextPiece,
         nextPieceDisplay: nextPieceDisplay,
         centerRow: 0,
-        centerCol: Math.floor(gameWidth/2),
+        centerCol: Math.floor(constants.gameWidth/2),
       }
     });
     
@@ -688,7 +376,7 @@ class GameSpace extends React.Component{
 
     return this.startPieceDropInterval();
   }
-  
+
   startGame () {
     this.focusDiv(this.refs.canvasHolder);
     this.setState ({
@@ -707,97 +395,26 @@ class GameSpace extends React.Component{
     this.setState(getInitialState());
   }
   
-  
-  ////////////////////////////
   render() {
-  //console.log("rendering");
     
-    const self = this;
-    const mainContainerStyle = {
-      position: 'relative',
-      border: '',
-      width: 700,
-      height: 1000
-    };
-    
-    const fixedContainerWidth = 675;
-    const fixedContainerStyle = {
-      width: fixedContainerWidth,
-      position: 'absolute',
-      left: '50%',
-      marginLeft: -fixedContainerWidth/2,
-    };
-    
-    const canvasHolderStyle = {
-      width: fixedContainerWidth,
-      position: 'relative',
-      // margin: 20,
-      // paddingRight: 25,
-      // border: '1px solid black',
-      borderRadius: 15
-    };
-    
-    const gameLostNoticeWidth = 0.6*fixedContainerWidth;
-    const gameLostNoticeStyle = {
-      width: '80%',
-      position: 'absolute',
-      left: '53%',
-      top: '30%',
-      zIndex: 1,
-      color: 'white',
-      fontSize: 20,
-      marginLeft: -gameLostNoticeWidth/3,
-      background: 'rgba(0,0,0,0.5)',
-    };
-       
-    const saveScoreButtonStyle = {
-      color: 'black',
-      fontSize: 20,
-      width: 60,
-      height: 40,
-      padding: 0,
-      borderRadius: 14,
-      marginBottom: 10,
-    }
-    
-    const startGameContainerStyle = {
-      width: '70%',
-      position: 'absolute',
-      left: '58%',
-      top: '40%',
-      height: 120,
-      borderRadius: 15,
-      zIndex: 1,
-      color: 'white',
-      fontSize: 20,
-      marginLeft: -gameLostNoticeWidth/3,
-      background: 'rgba(0,0,0,0.5)',
-    };
-    
-    const startGameButtonStyle = {
-      color: 'black',
-      backgroundColor: 'white',
-      fontSize: 20,
-      width: 130,
-      height: 40,
-      marginTop: 40,
-      padding: 0,
-      borderRadius: 14
-    }
-    
-    console.log(this.state.gameRunning)
-    let col, row;
-    return (
-      <div className="text-center container" style={mainContainerStyle}>
-        
-        <div className="row fixed-game-elements" style={fixedContainerStyle}  >
+        return (
+      <div className="text-center container" style={styles.mainContainerStyle}>
+
+        <h1 className="text-center" style={styles.titleStyle}>Tetris</h1>
+
+        <div className="row fixed-game-elements" style={styles.fixedContainerStyle}  >
           
-          <div ref="canvasHolder" className="col canvasHolder" style={canvasHolderStyle} onKeyDown={(e) => this.handleKeyPress(e)} tabIndex="0">
+          <div ref="canvasHolder" 
+            className="text-center col canvasHolder" 
+            style={styles.canvasHolderStyle} 
+            onKeyDown={(e) => this.handleKeyPress(e)} 
+            tabIndex="0">
+            
             { !this.state.gameRunning ? 
-              <div className="col game-start-buttons" style={startGameContainerStyle}>
+              <div className="col game-start-buttons" style={styles.startGameContainerStyle}>
                 <button 
                   className="btn btn-default col" 
-                  style={startGameButtonStyle}
+                  style={styles.startGameButtonStyle}
                   onClick={this.startGame}>
                   New Game
                 </button>
@@ -805,7 +422,7 @@ class GameSpace extends React.Component{
               : null }
             
             { this.state.gameLost ? 
-              <div className="col game-won-buttons" style={gameLostNoticeStyle}>
+              <div className="col game-won-buttons" style={styles.gameLostNoticeStyle}>
                 <p>Game Over !</p>
                 <p>Level Reached: {this.state.level}</p>
                 <p>Lines: {this.state.lines}</p>
@@ -814,13 +431,13 @@ class GameSpace extends React.Component{
                 
                 <button 
                   className="btn btn-default col" 
-                  style={saveScoreButtonStyle}
+                  style={styles.saveScoreButtonStyle}
                   onClick={this.sendScoreToServer} >
                   yes
                 </button>
                 <button 
                   className="btn btn-default col" 
-                  style={saveScoreButtonStyle}
+                  style={styles.saveScoreButtonStyle}
                   onClick={this.backToStartScreen} >
                   no
                 </button>
@@ -829,7 +446,9 @@ class GameSpace extends React.Component{
               
               : null }
             
-            <canvas ref="canvas" width={this.state.canvasWidth} height={this.state.canvasHeight}/>
+            <canvas ref="canvas" 
+              className="col" 
+              style={styles.canvasStyle}/>
             
           </div>
           
@@ -846,94 +465,5 @@ class GameSpace extends React.Component{
     )
   }
 }
-
-class NextPieceDisplay extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      piece: this.props.piece
-    };
-  }
-  
-  componentWillReceiveProps(nextProps) {
-    this.setState({ piece: nextProps.piece });  
-    this.drawCanvas();
-  }
-  
-  componentDidMount () {
-    //console.log("mounted");
-    
-  }
-  
-  drawCanvas () {
-    // get the canvas ctx and the square function
-    const boardCtx = this.refs.canvas.getContext('2d');
-    const laySquare = this.props.drawSquare;
-    
-    //copy the current Board
-    let board = JSON.parse(JSON.stringify(this.props.board));
-    let piece = JSON.parse(JSON.stringify(this.props.piece));
-//     console.log(`squares: ${piece.squares}`)
-//     console.log('piece: @  0,0: ')
-//     console.log(board[0][0])
-    
-    // clear the current canvas and redraw according to this.state.board
-    boardCtx.clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.width);
-    
-    //this.props.piece.squares.forEach()
-    
-    this.props.board.forEach((row) => {
-      row.forEach((point) => {
-        
-        let color;
-        piece.squares.forEach((square) => {
-          //console.log('foreaching piece squares!: ', square[0], square[1], point.row, point.column)
-          if (point.row === square[0] && point.column === square[1]) {
-            //console.log('yep!')
-            color = piece.bgColor;
-          }
-          
-        });
-        
-        laySquare(point.x, point.y, color ? color : background, boardCtx);
-        
-      });
-      
-    });
-  }
-  
-  render() {
-  //console.log("rendering");
-    const self = this;
-    const displayDivStyle = {
-      // border: '1px solid grey',
-      borderRadius: 10,
-      width: 750,
-      height: 400,
-      marginTop: 25
-    };
-    const nextPieceTextStyle = {
-      fontWeight: 'bold',
-      fontSize: 25,
-    };
-    const statsStyle = {
-      fontWeight: 'bold',
-      fontSize: 25,
-    };
-    
-    return (
-      <div className="col" style={displayDivStyle}>
-        
-        <p style={nextPieceTextStyle}>Next: </p>
-        <canvas ref="canvas" width={squareSize*8+ 0.5*squareSize} height={squareSize*8+ 0.5*squareSize}/>
-        <p style={statsStyle}>Score: {this.props.points}</p>
-        <p style={statsStyle}>Lines: {this.props.lines}</p>
-        <p style={statsStyle}>Level: {this.props.level}</p>
-      </div>
-    )
-  }
-  
-}
-
 
 export default GameSpace;
