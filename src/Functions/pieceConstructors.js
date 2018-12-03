@@ -24,6 +24,7 @@ function baseSquare (centerRow, centerCol) {
 function I (centerRow, centerCol) {
   baseSquare.call(this, centerRow, centerCol);
   this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow+1, centerCol],[centerRow+2, centerCol]];
+  this.name = 'I';
 }
 
 // O shape - [ ] [ ] centered at bottom left
@@ -31,6 +32,7 @@ function I (centerRow, centerCol) {
 function O (centerRow, centerCol) {
   baseSquare.call(this, centerRow, centerCol);
   this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow-1, centerCol+1],[centerRow, centerCol+1]];
+  this.name = 'O';
 }
 
 // T shape -     [ ]     centered at bottom middle 
@@ -38,6 +40,7 @@ function O (centerRow, centerCol) {
 function T (centerRow, centerCol) {
   baseSquare.call(this, centerRow, centerCol);
   this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow, centerCol-1],[centerRow, centerCol+1]];
+  this.name = 'T';
 }
 
 // S shape -     [ ] [ ]   centered at bottom
@@ -45,6 +48,7 @@ function T (centerRow, centerCol) {
 function S (centerRow, centerCol) {
   baseSquare.call(this, centerRow, centerCol);
   this.squares = [[centerRow, centerCol],[centerRow-1, centerCol],[centerRow-1, centerCol+1],[centerRow, centerCol-1]];
+  this.name = 'S';
 }
 
 // Z shape -  [ ] [ ]      centered at bottom
@@ -52,6 +56,7 @@ function S (centerRow, centerCol) {
 function Z (centerRow, centerCol) {
   baseSquare.call(this, centerRow, centerCol);
   this.squares = [[centerRow, centerCol],[centerRow-1, centerCol-1],[centerRow-1, centerCol],[centerRow, centerCol+1]];
+  this.name = 'Z';
 }
 
 // J shape -  [ ]          centered at bottom middle
@@ -59,6 +64,7 @@ function Z (centerRow, centerCol) {
 function J (centerRow, centerCol) {
   baseSquare.call(this, centerRow, centerCol);
   this.squares = [[centerRow, centerCol],[centerRow-1, centerCol-1],[centerRow, centerCol-1],[centerRow, centerCol+1]];
+  this.name = 'J';
 }
 
 // L shape -          [ ]  centered at bottom middle
@@ -66,6 +72,7 @@ function J (centerRow, centerCol) {
 function L (centerRow, centerCol) {
   baseSquare.call(this, centerRow, centerCol);
   this.squares = [[centerRow, centerCol],[centerRow, centerCol-1],[centerRow, centerCol+1],[centerRow-1, centerCol+1]];
+  this.name = 'L';
 }
 
 export { I, O, T, S, Z, J, L };

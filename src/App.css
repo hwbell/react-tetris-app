@@ -1,0 +1,13 @@
+body {
+  font-family: 'Courier';
+}
+
+.canvasHolder:focus {
+  outline: none;
+}
+
+.btn:hover {
+  color: black;
+  background-color: whitesmoke;
+}
+

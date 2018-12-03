@@ -42,6 +42,11 @@ class NextPieceDisplay extends React.Component {
     //this.props.piece.squares.forEach()
     
     this.props.board.forEach((row) => {
+
+      // these are fudge factors for the square and line shapes
+      let XShift = piece.name === 'O' ? 0.5*constants.squareSize : 0 ;
+      let YShift = piece.name === 'I' ? 0.5*constants.squareSize : 0 ;
+      
       row.forEach((point) => {
         
         let color;
@@ -54,7 +59,7 @@ class NextPieceDisplay extends React.Component {
           
         });
         
-        laySquare(point.x, point.y, color ? color : constants.backgroundColor, boardCtx);
+        laySquare(point.x-XShift, point.y-YShift, color ? color : '#020825', boardCtx);
         
       });
       
@@ -65,12 +70,14 @@ class NextPieceDisplay extends React.Component {
   //console.log("rendering");
     
     return (
-      <div className="col" style={styles.displayDivStyle}>
+      <div className="" style={styles.displayDivStyle}>
         
         <p style={styles.text}>Next: </p>
         <canvas ref="canvas" 
-          width={constants.squareSize*8+ 0.5*constants.squareSize} 
-          height={constants.squareSize*8+ 0.5*constants.squareSize}/>
+          width={constants.nextPieceDisplaySize} 
+          height={constants.nextPieceDisplaySize}
+          style={styles.canvasStyle}
+          />
         <p style={styles.text}>Score: {this.props.points}</p>
         <p style={styles.text}>Lines: {this.props.lines}</p>
         <p style={styles.text}>Level: {this.props.level}</p>

@@ -1,10 +1,11 @@
 // modules
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 // styling
 import 'bootstrap/dist/css/bootstrap.css';
 import styles from './App.styles';
+import './App.css';
 
 // components
 import NextPieceDisplay from './Components/NextPieceDisplay';
@@ -12,6 +13,11 @@ import NextPieceDisplay from './Components/NextPieceDisplay';
 // constants
 import constants from './Constants/gameConstants';
 
+// icons
+import { FaTimes } from 'react-icons/fa';
+import { FaCheck } from 'react-icons/fa';
+
+// get gamePlayFunctions in shorthand
 import {
   makeGameArray,
   makeInitialFloor,
@@ -19,6 +25,9 @@ import {
   removeCompleteLines,
   getNewPieceFunction,
 } from './Functions/gamePlayFunctions';
+
+// get serverFunctions in shorthand
+import { postScore, getScores } from './Functions/serverFunctions';
 
 const getInitialState = () => {
   var initialStateObj = {
@@ -37,7 +46,8 @@ const getInitialState = () => {
     points: 0,
     level: 1,
     gameLost: false,
-    gameRunning: false
+    gameRunning: false,
+    playerName: ''
   };
   
   // get two random piece functions to assign the first pieces
@@ -49,7 +59,7 @@ const getInitialState = () => {
   initialStateObj.nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth/2));
   
   // another copy of the next piece for the display
-  initialStateObj.nextPieceDisplay = new nextPieceFunction(4, 3);
+  initialStateObj.nextPieceDisplay = new nextPieceFunction(2,2);
   initialStateObj.nextPieceDisplay.bgColor = initialStateObj.nextPiece.bgColor;
   
   return initialStateObj;
@@ -73,7 +83,6 @@ class GameSpace extends React.Component{
   focusDiv(selector) {
     console.log(`focusing on ${selector}`)
     ReactDOM.findDOMNode(selector).focus();
-    ReactDOM.findDOMNode(selector).focus();
   }
 
   // to fill in individual squares of the canvas according to state
@@ -89,8 +98,8 @@ class GameSpace extends React.Component{
     
     // clear the current canvas and redraw according to this.state.board
     boardCtx.clearRect(0, 0, this.state.canvasWidth, this.state.canvasHeight);
-    this.state.board.map((row) => {
-      row.map((point) => {
+    this.state.board.forEach((row) => {
+      row.forEach((point) => {
         laySquare(point.x, point.y, point.bgColor, boardCtx);
       });
     });
@@ -148,6 +157,10 @@ class GameSpace extends React.Component{
     
     //console.log(`currentPiece.squares: ${currentPiece.squares}`)
     
+    // if its a square, don't do anything
+    if (this.state.currentPiece.name === 'O') {
+      return;
+    }
     // clear the currentPiece off of the board
     this.state.currentPiece.squares.forEach((square) => {
       //console.log(`clearing ${square[0]}, ${square[1]}`)
@@ -187,7 +200,7 @@ class GameSpace extends React.Component{
       currentBoard[square[0]][square[1]].bgColor = currentPiece.bgColor;
     });
     
-    this.setState({
+    return this.setState({
       board: currentBoard,
       currentPiece: newPiece
     });
@@ -359,7 +372,7 @@ class GameSpace extends React.Component{
     //  get the new Pieces to start over with
     let nextPieceFunction = getNewPieceFunction();
     let nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth/2));
-    let nextPieceDisplay = new nextPieceFunction(4, 3);
+    let nextPieceDisplay = new nextPieceFunction(2,2);
     nextPieceDisplay.bgColor = nextPiece.bgColor;
     
     this.setState( (prevState) => {
@@ -394,18 +407,38 @@ class GameSpace extends React.Component{
   backToStartScreen () {
     this.setState(getInitialState());
   }
+
+  getPlayerName () {
+    this.setState({
+      getPlayerName: true,
+    })
+  }
+
+  sendScoreToServer () {
+    this.setState({
+      getPlayerName: false
+    }, () => {
+      let score = {
+        name: this.state.playerName,
+        score: this.state.score,
+        lines: this.state.lines,
+        level: this.state.level
+      }
+      postScore(score);
+    });
+  }
   
   render() {
     
-        return (
+    return (
       <div className="text-center container" style={styles.mainContainerStyle}>
 
         <h1 className="text-center" style={styles.titleStyle}>Tetris</h1>
 
-        <div className="row fixed-game-elements" style={styles.fixedContainerStyle}  >
+        <div className="row fixed-game-elements col" style={styles.fixedContainerStyle}  >
           
           <div ref="canvasHolder" 
-            className="text-center col canvasHolder" 
+            className="text-center canvasHolder" 
             style={styles.canvasHolderStyle} 
             onKeyDown={(e) => this.handleKeyPress(e)} 
             tabIndex="0">
@@ -423,31 +456,46 @@ class GameSpace extends React.Component{
             
             { this.state.gameLost ? 
               <div className="col game-won-buttons" style={styles.gameLostNoticeStyle}>
-                <p>Game Over !</p>
+                <p style={styles.gameLostText}>Game Over !</p>
                 <p>Level Reached: {this.state.level}</p>
                 <p>Lines: {this.state.lines}</p>
                 <p>Points: {this.state.points}</p>
                 <p>Save to high scores ?</p>
                 
-                <button 
-                  className="btn btn-default col" 
-                  style={styles.saveScoreButtonStyle}
-                  onClick={this.sendScoreToServer} >
-                  yes
-                </button>
-                <button 
-                  className="btn btn-default col" 
-                  style={styles.saveScoreButtonStyle}
-                  onClick={this.backToStartScreen} >
-                  no
-                </button>
-                
+                <div class="text-center">
+                  <button 
+                    className="btn btn-default" 
+                    style={styles.saveScoreButtonStyle}
+                    onClick={this.getPlayerName} >
+                    <FaCheck/>
+                  </button>
+                  <button 
+                    className="btn btn-default" 
+                    style={styles.dontSaveButtonStyle}
+                    onClick={this.backToStartScreen} >
+                    <FaTimes/>
+                  </button>
+                </div>
               </div>
               
+              : null }
+
+              { this.state.getPlayerName ? 
+              <div>
+              <form onSubmit={this.sendScoreToServer}>
+                <label>
+                  Name:
+                  <input type="text" value={this.state.value} />
+                </label>
+                <input type="submit" value="Submit" />
+              </form>
+              </div>  
               : null }
             
             <canvas ref="canvas" 
               className="col" 
+              width={this.state.canvasWidth}
+              height={this.state.canvasHeight}
               style={styles.canvasStyle}/>
             
           </div>
@@ -456,7 +504,7 @@ class GameSpace extends React.Component{
              points={this.state.points}
              lines={this.state.lines}
              level={this.state.level}
-             board={makeGameArray(7,7)}
+             board={makeGameArray(5,5)}
              piece={this.state.nextPieceDisplay}
              drawSquare = {this.drawSquare}/>
           }

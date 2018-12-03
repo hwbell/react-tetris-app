@@ -1,17 +1,21 @@
 // define the width and height, in number of squares
-const gameWidth = 15;
-const gameHeight = 30;
+const gameWidth = 12;
+const gameHeight = 24;
+
 
 // define the width/height of squares, in pixels
 const squareSize = 25;
 
 // define canvas size according to squaresize
-const canvasWidth = squareSize*gameWidth+ squareSize;
-const canvasHeight = squareSize*gameHeight+ squareSize;
+const canvasWidth = squareSize*gameWidth + squareSize;
+const canvasHeight = squareSize*gameHeight + squareSize;
+
+// define nextPieceDisplay size accoring to squareSize. This will be a square so just need one number
+const nextPieceDisplaySize = squareSize*5 + squareSize;
 
 // colors for GameSquares
 const backgroundColor = 'black';
-const borderColor = 'black';
+const borderColor = '#020825';
 
 // define colorset and a function to pull one randomly for each move 
 const squareColors = [ // using material design chart from https://htmlcolorcodes.com/color-chart/
@@ -34,6 +38,7 @@ const constants = {
   squareSize,
   canvasHeight,
   canvasWidth,
+  nextPieceDisplaySize,
   backgroundColor,
   borderColor,
   squareColors
