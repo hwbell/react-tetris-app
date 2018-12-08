@@ -1,60 +1,51 @@
 import constants from './Constants/gameConstants';
 
-const fixedContainerWidth = 750;
-const gameLostNoticeWidth = 0.6 * fixedContainerWidth;
-
-
+const canvasWidth = 450
+const gameLostNoticeWidth = canvasWidth * 0.5;
+const startGameWidth = canvasWidth * 0.35;
 
 const styles = { 
   mainContainerStyle: {
-    margin: 'auto auto',
-    position: 'relative',
-    width: 800,
-    height: 1000,
+    height: 50/*Tite Margin */ + constants.squareSize*constants.gameHeight*1.2,
     //border: '4px solid yellow',
     borderRadius: 30,
   },
   titleStyle: {
-    color: 'white',
+    color: 'black',
     fontFamily: 'Courier',
     margin: 50,
   },
-  fixedContainerStyle: {
-    width: fixedContainerWidth,
-    position: 'absolute',
-    left: '50%',
-    marginLeft: -fixedContainerWidth / 2,
+  gameContainerStyle: {
     //border: '4px solid red',
     borderRadius: 30,
   },
   canvasHolderStyle: {
-    width: fixedContainerWidth * 0.6,
     position: 'relative',
-    // margin: 20,
-    // paddingRight: 25,
-    //border: '4px solid blue',
     borderRadius: 30,
     // focus
     //   outline: none,
   },
   canvasStyle: {
-    backgroundColor: 'black',
+    backgroundColor: 'whitesmoke',
     // border: '4px solid brown',
     // borderRadius: 24,
     width: constants.canvasWidth+25,
+    minWidth: constants.canvasWidth+25,
     height: constants.canvasHeight,
   },
   gameLostNoticeStyle: {
-    width: '70%',
+    //border: '4px solid black',
+    borderRadius: 20,
+    width: gameLostNoticeWidth,
     position: 'absolute',
     left: '50%',
-    top: '30%',
+    top: '25%',
     zIndex: 1,
     color: 'white',
-    fontSize: 20,
+    fontSize: 15,
     fontFamily: 'Courier',
     fontWeight: 'bold',
-    marginLeft: -gameLostNoticeWidth / 3,
+    marginLeft: -gameLostNoticeWidth / 2,
     background: 'rgba(0,0,0,0.65)',
   },
   gameLostText: {
@@ -77,19 +68,19 @@ const styles = {
     marginBottom: 20,
   },
   startGameContainerStyle: {
-    width: '70%',
+    width: startGameWidth,
     position: 'absolute',
     left: '50%',
     top: '40%',
-    height: 120,
+    height: 60,
     borderRadius: 15,
     zIndex: 1,
     color: 'white',
     fontSize: 20,
     fontFamily: 'Courier',
     fontWeight: 'bold',
-    marginLeft: -gameLostNoticeWidth / 3,
-    background: 'rgba(0,0,0,0.65)',
+    marginLeft: -startGameWidth / 2,
+    //background: 'rgba(0,0,0,0.25)',
   },
 
   startGameButtonStyle: {
@@ -100,9 +91,8 @@ const styles = {
     fontWeight: '800',
     width: 130,
     height: 40,
-    marginRight: 15,
-    marginTop: 40,
-    padding: 0,
+    marginTop: 10,
+    paddingTop: 4,
     border: '4px solid white',
     borderRadius: 14
   }

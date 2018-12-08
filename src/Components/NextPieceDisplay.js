@@ -32,45 +32,29 @@ class NextPieceDisplay extends React.Component {
     
     //copy the current Board
     let piece = JSON.parse(JSON.stringify(this.props.piece));
-//     console.log(`squares: ${piece.squares}`)
-//     console.log('piece: @  0,0: ')
-//     console.log(board[0][0])
     
-    // clear the current canvas and redraw according to this.state.board
+    // these are fudge factors for the square and line shapes
+    let XShift = piece.name === 'O' ? 0.5*constants.squareSize : 0 ;
+    let YShift = piece.name === 'I' ? 0.5*constants.squareSize : 0 ;
+
+    // clear the current canvas and redraw according to the piece passed down
     boardCtx.clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.width);
     
-    //this.props.piece.squares.forEach()
-    
-    this.props.board.forEach((row) => {
-
-      // these are fudge factors for the square and line shapes
-      let XShift = piece.name === 'O' ? 0.5*constants.squareSize : 0 ;
-      let YShift = piece.name === 'I' ? 0.5*constants.squareSize : 0 ;
-      
-      row.forEach((point) => {
-        
-        let color;
-        piece.squares.forEach((square) => {
-          //console.log('foreaching piece squares!: ', square[0], square[1], point.row, point.column)
-          if (point.row === square[0] && point.column === square[1]) {
-            //console.log('yep!')
-            color = piece.bgColor;
-          }
-          
-        });
-        
-        laySquare(point.x-XShift, point.y-YShift, color ? color : '#020825', boardCtx);
-        
-      });
-      
+    // draw each square of the piece
+    piece.squares.forEach( (square) => {
+      let row = square[0];
+      let col = square[1];
+      let boardSquare = this.props.board[row][col];
+      laySquare(boardSquare.x-XShift, boardSquare.y-YShift, piece.bgColor, boardCtx);
     });
+    
   }
   
   render() {
   //console.log("rendering");
     
     return (
-      <div className="" style={styles.displayDivStyle}>
+      <div className="text-center col" style={styles.displayDivStyle}>
         
         <p style={styles.text}>Next: </p>
         <canvas ref="canvas" 

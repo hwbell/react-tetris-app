@@ -1,19 +1,20 @@
 const styles = {
   displayDivStyle: {
-    // border: '1px solid grey',
+    //border: '1px solid red',
     borderRadius: 10,
-    width: 250,
     // height: 300,
-    marginTop: 25
+    marginTop: 30
   },
   text: {
-    color: 'white',
+    margin: 0,
+    color: 'black',
     fontWeight: 'bold',
     fontSize: 16,
     fontFamily: 'Courier',
   },
   canvasStyle: {
-    backgroundColor: '#020825'
+    marginBottom: 0,
+    backgroundColor: 'whitesmoke'
   },
 }
 

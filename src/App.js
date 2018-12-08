@@ -16,6 +16,8 @@ import constants from './Constants/gameConstants';
 // icons
 import { FaTimes } from 'react-icons/fa';
 import { FaCheck } from 'react-icons/fa';
+import { FaFrown } from 'react-icons/fa';
+
 
 // get gamePlayFunctions in shorthand
 import {
@@ -431,14 +433,14 @@ class GameSpace extends React.Component{
   render() {
     
     return (
-      <div className="text-center container" style={styles.mainContainerStyle}>
+      <div className="text-center container-fluid" style={styles.mainContainerStyle}>
 
         <h1 className="text-center" style={styles.titleStyle}>Tetris</h1>
 
-        <div className="row fixed-game-elements col" style={styles.fixedContainerStyle}  >
+        <div className="text-center row" style={styles.gameContainerStyle}  >
           
           <div ref="canvasHolder" 
-            className="text-center canvasHolder" 
+            className="text-center col canvasHolder" 
             style={styles.canvasHolderStyle} 
             onKeyDown={(e) => this.handleKeyPress(e)} 
             tabIndex="0">
@@ -456,11 +458,11 @@ class GameSpace extends React.Component{
             
             { this.state.gameLost ? 
               <div className="col game-won-buttons" style={styles.gameLostNoticeStyle}>
-                <p style={styles.gameLostText}>Game Over !</p>
+                <p style={styles.gameLostText}>Game Over <FaFrown/></p>
                 <p>Level Reached: {this.state.level}</p>
                 <p>Lines: {this.state.lines}</p>
                 <p>Points: {this.state.points}</p>
-                <p>Save to high scores ?</p>
+                <p>Save to server?</p>
                 
                 <div class="text-center">
                   <button 
