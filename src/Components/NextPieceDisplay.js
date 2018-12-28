@@ -54,7 +54,7 @@ class NextPieceDisplay extends React.Component {
   //console.log("rendering");
     
     return (
-      <div className="text-center col" style={styles.displayDivStyle}>
+      <div className="text-center" style={styles.displayDivStyle}>
         
         <p style={styles.text}>Next: </p>
         <canvas ref="canvas" 

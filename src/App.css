@@ -12,3 +12,6 @@ body {
   background-color: whitesmoke;
 }
 
+input:focus {
+  outline: none;
+}

@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-//import logo from './logo.svg';
 import styles from './highScores.styles';
-
 import 'bootstrap/dist/css/bootstrap.css';
-
-import constants from '../Constants/gameConstants';
 
 class highScores extends React.Component {
   constructor(props) {

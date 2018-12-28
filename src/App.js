@@ -41,63 +41,72 @@ const getInitialState = () => {
     board: makeGameArray(constants.gameWidth, constants.gameHeight),
     boardFloor: makeInitialFloor(constants.gameWidth),
     centerRow: 0,
-    centerCol: Math.floor(constants.gameWidth/2),
+    centerCol: Math.floor(constants.gameWidth / 2),
     intervalTimer: null,
     gameSpeed: 300,
     lines: 0,
     points: 0,
     level: 1,
+    score: 0,
     gameLost: false,
     gameRunning: false,
+    showSuccessfulSave: false,
     playerName: ''
   };
-  
+
   // get two random piece functions to assign the first pieces
   let pieceFunction = getNewPieceFunction();
   let nextPieceFunction = getNewPieceFunction();
-  
+
   // get new pieces for the first drop
-  initialStateObj.currentPiece = new pieceFunction(2, Math.floor(constants.gameWidth/2));
-  initialStateObj.nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth/2));
-  
+  initialStateObj.currentPiece = new pieceFunction(2, Math.floor(constants.gameWidth / 2));
+  initialStateObj.nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth / 2));
+
   // another copy of the next piece for the display
-  initialStateObj.nextPieceDisplay = new nextPieceFunction(2,2);
+  initialStateObj.nextPieceDisplay = new nextPieceFunction(2, 2);
   initialStateObj.nextPieceDisplay.bgColor = initialStateObj.nextPiece.bgColor;
-  
+
   return initialStateObj;
 }
 
-class GameSpace extends React.Component{
+class GameSpace extends React.Component {
   constructor(props) {
     super(props)
-   // this.handleKeyPress = this.handleKeyPress.bind(this);
+    // this.handleKeyPress = this.handleKeyPress.bind(this);
     this.redrawCanvas = this.redrawCanvas.bind(this);
     this.startGame = this.startGame.bind(this);
     this.backToStartScreen = this.backToStartScreen.bind(this);
-    this.state = getInitialState();
+    this.getPlayerName = this.getPlayerName.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.sendScoreToServer = this.sendScoreToServer.bind(this);
+
   }
-  
-  componentDidMount () {
+
+  componentWillMount() {
+    this.setState(getInitialState())
+  }
+
+  componentDidMount() {
     console.log("mounted");
     this.redrawCanvas();
   }
-  
+
   focusDiv(selector) {
     console.log(`focusing on ${selector}`)
     ReactDOM.findDOMNode(selector).focus();
   }
 
   // to fill in individual squares of the canvas according to state
-  drawSquare (centerRow, centerCol, color, ctx) {
+  drawSquare(centerRow, centerCol, color, ctx) {
     ctx.fillStyle = color;
     ctx.fillRect(centerRow, centerCol, constants.squareSize, constants.squareSize);
   }
-  
-  redrawCanvas () {
+
+  redrawCanvas() {
     // get the canvas context and the laySquare function
     const boardCtx = this.refs.canvas.getContext('2d');
     const laySquare = this.drawSquare || this.props.drawSquare;
-    
+
     // clear the current canvas and redraw according to this.state.board
     boardCtx.clearRect(0, 0, this.state.canvasWidth, this.state.canvasHeight);
     this.state.board.forEach((row) => {
@@ -106,13 +115,13 @@ class GameSpace extends React.Component{
       });
     });
   }
-  
+
   // when the current piece reaches the bottom or any floor piece, i.e. contact detected
-  addToFloor (piece) {
-    
+  addToFloor(piece) {
+
     let newFloor = JSON.parse(JSON.stringify(this.state.boardFloor));
     let newBoard = JSON.parse(JSON.stringify(this.state.board));
-    
+
     piece.squares.forEach((square) => {
       newFloor.squares.push(square);
       let col = square[0];
@@ -120,45 +129,45 @@ class GameSpace extends React.Component{
       newBoard[col][row].type = "floor";
       newBoard[col][row].bgColor = piece.bgColor;
     });
-    
-    newBoard = removeCompleteLines(newBoard,newFloor);
-    
+
+    newBoard = removeCompleteLines(newBoard, newFloor);
+
     this.setState({
       board: newBoard[0],
       boardFloor: newBoard[1],
     });
-    
+
     if (newBoard[2]) {
       console.log('updating lines and points')
       this.updateLinesAndPoints(newBoard);
     }
-    
+
     //console.log(`newFloor: ${newFloor.squares}`)
   }
-  
-  updateLinesAndPoints (newBoard) {
-    
+
+  updateLinesAndPoints(newBoard) {
+
     this.setState({
       lines: this.state.lines + newBoard[2],
       points: this.state.points + newBoard[3]
     });
     this.setState({
-      level: Math.floor(this.state.lines/10)
+      level: Math.floor((this.state.lines / 10) + 1)
     });
-    
+
   }
-  
-  rotatePiece () {
+
+  rotatePiece() {
     let centerRow = this.state.currentPiece.centerRow;
     let centerCol = this.state.currentPiece.centerCol;
-    
+
     // console.log("rotating piece")
     // console.log(`center: ${centerRow}, ${centerCol}`)
     let currentBoard = JSON.parse(JSON.stringify(this.state.board));
     let currentPiece = JSON.parse(JSON.stringify(this.state.currentPiece));
-    
+
     //console.log(`currentPiece.squares: ${currentPiece.squares}`)
-    
+
     // if its a square, don't do anything
     if (this.state.currentPiece.name === 'O') {
       return;
@@ -168,7 +177,7 @@ class GameSpace extends React.Component{
       //console.log(`clearing ${square[0]}, ${square[1]}`)
       currentBoard[square[0]][square[1]].bgColor = constants.backgroundColor;
     });
-    
+
     let rotatedSquares = currentPiece.squares.map((square) => {
       // rotation of the row and col of each square is changed according to its original displacement from the center square
       // the center square does not change
@@ -180,11 +189,11 @@ class GameSpace extends React.Component{
       let newCol = centerCol - initialRowDisp;
       return [newRow, newCol];
     });
-    
+
     let newPiece = JSON.parse(JSON.stringify(currentPiece));
     newPiece.squares = rotatedSquares;
     //console.log(rotatedSquares);
-    
+
     // check for illegal movement into existing floor or border
     let illegalMove = false;
     newPiece.squares.forEach((square) => {
@@ -192,44 +201,44 @@ class GameSpace extends React.Component{
 
       if (!boardSquare || boardSquare.type !== "background") {
         illegalMove = true
-      } 
+      }
     });
     //console.log(`illegalMove: ${illegalMove}`)
-    if (illegalMove) {return;}
-    
+    if (illegalMove) { return; }
+
     // change the currentBoard to reflect the rotated piece
     newPiece.squares.forEach((square) => {
       currentBoard[square[0]][square[1]].bgColor = currentPiece.bgColor;
     });
-    
+
     return this.setState({
       board: currentBoard,
       currentPiece: newPiece
     });
-    
+
   }
-  
-  handleKeyPress (event)  {
+
+  handleKeyPress(event) {
     console.log(event.key);
     event.preventDefault();
 
     if (event.key === "ArrowUp") {
       this.rotatePiece();
     } else {
-      this.shiftPieceCenter (event.key);
+      this.shiftPieceCenter(event.key);
     }
-    
+
     // define "ArrowLeft" / "ArrowRight" / "ArrowDown" behavior based on simple conversion on the current centerX, centerY
-    
+
     // define "ArrowUp" behavior based on rotation
     this.redrawCanvas();
   }
-  
+
   // returns true for a legal move an false otherwise
-  isMoveLegal (piece) {
+  isMoveLegal(piece) {
     // copy the currentBoard
     let currentBoard = JSON.parse(JSON.stringify(this.state.board));
-    
+
     // check for illegal movement into existing floor or border, or nonexistent piece
     let illegalMove = false;
     piece.squares.forEach((square) => {
@@ -240,16 +249,16 @@ class GameSpace extends React.Component{
       }
     });
     //console.log(`illegalMove: ${illegalMove}`)
-    if (illegalMove) {return false;}
-    
+    if (illegalMove) { return false; }
+
     return true;
   }
-  
+
   // to move a piece around the board 
   // this handles both the base interval as well as the user keyboard input.
-  
-  shiftPieceCenter (key) {
-    
+
+  shiftPieceCenter(key) {
+
     // copy the current board and piece
     let currentBoard = JSON.parse(JSON.stringify(this.state.board));
     let currentPiece = JSON.parse(JSON.stringify(this.state.currentPiece));
@@ -260,50 +269,50 @@ class GameSpace extends React.Component{
     this.state.currentPiece.squares.forEach((square) => {
       currentBoard[square[0]][square[1]].bgColor = constants.backgroundColor;
     });
-    
+
     let movedSquares;
-    
+
     // change the center accoding to the key
-    
+
     if (key === "ArrowDown") { // add 1 to row
       centerRow++;
       movedSquares = currentPiece.squares.map((square) => {
-        return [square[0]+1, square[1]];
+        return [square[0] + 1, square[1]];
       });
       currentPiece.centerRow++;
-    } 
+    }
     else if (key === "ArrowLeft") { // subtract 1 from col
       centerCol--;
       movedSquares = currentPiece.squares.map((square) => {
-        return [square[0], square[1]-1];
+        return [square[0], square[1] - 1];
       });
       currentPiece.centerCol--;
-    } 
+    }
     else if (key === "ArrowRight") { // add 1 to col
       centerCol++;
       movedSquares = currentPiece.squares.map((square) => {
-        return [square[0], square[1]+1];
+        return [square[0], square[1] + 1];
       });
       currentPiece.centerCol++;
-    } 
+    }
     else { // nothing for other keys
       return;
     }
-    
+
     let movedPiece = JSON.parse(JSON.stringify(currentPiece));
     movedPiece.squares = movedSquares;
-    
+
     //console.log(`movedSquares: ${movedSquares}`)
-    
+
     // check for illegal movement into an occupied square - floor or border
     // make sure none of the squares of the new piece are border or floor already, by just checking if the type == 'background'
-    
+
     // check for illegal movement into existing floor or border
     if (!this.isMoveLegal(movedPiece)) {
       console.log('illegal move');
-      return false; 
+      return false;
     }
-    
+
     else {
       // change the currentBoard to show the new piece
       movedPiece.squares.forEach((square) => {
@@ -320,42 +329,42 @@ class GameSpace extends React.Component{
 
     return true;
   }
-  
-  
+
+
   // this is just for the regular interval of downward piece movement
   // User input is handled separately
-  startPieceDropInterval () {
+  startPieceDropInterval() {
     console.log("new Interval starting");
-    
-    let timer = setInterval( () => {
+
+    let timer = setInterval(() => {
       // redraw  the board
       this.redrawCanvas();
       // copy the board
       let board = JSON.parse(JSON.stringify(this.state.board))
-      
+
       // first check for any contact created by user input
       let initialPiece = JSON.parse(JSON.stringify(this.state.currentPiece));
       let initialFloor = JSON.parse(JSON.stringify(this.state.boardFloor));
-            
+
       // if piece hits any part of the floor, it becomes part of the floor. Restart with a new piece
       let contact = detectContact(initialPiece, initialFloor);
-      
+
       if (contact) {
-        return this.newPieceDropInterval (timer, initialPiece);
+        return this.newPieceDropInterval(timer, initialPiece);
       }
-      
+
       // returns false for an illegal move
       // otherwise moves the piece down and returns true  
       let movedPiece = this.shiftPieceCenter("ArrowDown");
-      
+
       if (!movedPiece) {
-        return this.newPieceDropInterval (timer, initialPiece);
+        return this.newPieceDropInterval(timer, initialPiece);
       }
-        
-    }, this.state.gameSpeed );
+
+    }, this.state.gameSpeed);
   }
-  
-  newPieceDropInterval (timer, movedPiece) {
+
+  newPieceDropInterval(timer, movedPiece) {
     // console.log("restarting game")
     clearInterval(timer);
 
@@ -367,148 +376,186 @@ class GameSpace extends React.Component{
 
     // make piece part of the floor
     this.addToFloor(movedPiece);
-    
-    
+
+
     // start over with a new currentPiece and nextPiece        
-    
+
     //  get the new Pieces to start over with
     let nextPieceFunction = getNewPieceFunction();
-    let nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth/2));
-    let nextPieceDisplay = new nextPieceFunction(2,2);
+    let nextPiece = new nextPieceFunction(2, Math.floor(constants.gameWidth / 2));
+    let nextPieceDisplay = new nextPieceFunction(2, 2);
     nextPieceDisplay.bgColor = nextPiece.bgColor;
-    
-    this.setState( (prevState) => {
+
+    this.setState((prevState) => {
       return {
         currentPiece: prevState.nextPiece,
         nextPiece: nextPiece,
         nextPieceDisplay: nextPieceDisplay,
         centerRow: 0,
-        centerCol: Math.floor(constants.gameWidth/2),
+        centerCol: Math.floor(constants.gameWidth / 2),
       }
     });
-    
+
     //this.redrawCanvas();
 
     return this.startPieceDropInterval();
   }
 
-  startGame () {
+  startGame(event) {
     this.focusDiv(this.refs.canvasHolder);
-    this.setState ({
+    this.setState({
       gameRunning: true,
     });
     this.startPieceDropInterval();
   }
-  
-  endGame () {
+
+  endGame() {
     this.setState({
-      gameLost: true
+      gameLost: true,
+      selectingToSave: true,
     });
   }
-  
-  backToStartScreen () {
+
+  backToStartScreen() {
     this.setState(getInitialState());
   }
 
-  getPlayerName () {
+  getPlayerName() {
     this.setState({
       getPlayerName: true,
+      //gameLost: false,
     })
   }
 
-  sendScoreToServer () {
-    this.setState({
-      getPlayerName: false
-    }, () => {
-      let score = {
-        name: this.state.playerName,
-        score: this.state.score,
-        lines: this.state.lines,
-        level: this.state.level
-      }
-      postScore(score);
-    });
+  handleChange(event) {
+    console.log('onchange firing')
+    this.setState({ playerName: event.target.value });
   }
-  
-  render() {
+
+  sendScoreToServer() {
+    const self = this;
+    const score = {
+      name: this.state.playerName,
+      score: this.state.score,
+      lines: this.state.lines,
+      level: this.state.level
+    }
+
+    fetch('https://lit-ridge-56288.herokuapp.com/', { 
+      method: 'POST', 
+      body: JSON.stringify(score),
+      headers: {
+        "Content-type": "application/json"
+      }  
+    })
+    .then(res => res.json())
+    .then((json) => {
+      console.log(json)
+      self.setState(getInitialState());
+    });
+
+    // postScore(self, {
+    //   name: this.state.playerName,
+    //   score: this.state.score,
+    //   lines: this.state.lines,
+    //   level: this.state.level
+    // }, (res) => {
+    //   console.log(res);
+      
+    // });
     
+  }
+
+  render() {
+
     return (
       <div className="text-center container-fluid" style={styles.mainContainerStyle}>
 
         <h1 className="text-center" style={styles.titleStyle}>Tetris</h1>
 
         <div className="text-center row" style={styles.gameContainerStyle}  >
-          
-          <div ref="canvasHolder" 
-            className="text-center col canvasHolder" 
-            style={styles.canvasHolderStyle} 
-            onKeyDown={(e) => this.handleKeyPress(e)} 
-            tabIndex="0">
-            
-            { !this.state.gameRunning ? 
-              <div className="col game-start-buttons" style={styles.startGameContainerStyle}>
-                <button 
-                  className="btn btn-default col" 
+
+          {!this.state.gameRunning ?
+            <div className="game-start-buttons" style={styles.startGameContainerStyle}>
+
+              <form onSubmit={this.startGame}>
+                <label>
+
+                  <input
+                    type="text"
+                    value={this.state.value}
+                    onChange={this.handleChange}
+                    style={styles.submitNameStyle}
+                  />
+                </label>
+                <input
+                  type="submit"
+                  value="New Game"
                   style={styles.startGameButtonStyle}
-                  onClick={this.startGame}>
-                  New Game
-                </button>
-              </div>              
-              : null }
-            
-            { this.state.gameLost ? 
-              <div className="col game-won-buttons" style={styles.gameLostNoticeStyle}>
-                <p style={styles.gameLostText}>Game Over <FaFrown/></p>
+                />
+              </form>
+
+
+            </div>
+            : null}
+
+          <div ref="canvasHolder"
+            className="text-center canvasHolder"
+            style={styles.canvasHolderStyle}
+            onKeyDown={(e) => this.handleKeyPress(e)}
+            tabIndex="0">
+
+
+
+            {this.state.gameLost ?
+              <div className="col game-over-container" style={styles.gameLostNoticeStyle}>
+                <p style={styles.gameLostText}>Game Over <FaFrown /></p>
                 <p>Level Reached: {this.state.level}</p>
                 <p>Lines: {this.state.lines}</p>
                 <p>Points: {this.state.points}</p>
-                <p>Save to server?</p>
-                
-                <div class="text-center">
-                  <button 
-                    className="btn btn-default" 
-                    style={styles.saveScoreButtonStyle}
-                    onClick={this.getPlayerName} >
-                    <FaCheck/>
-                  </button>
-                  <button 
-                    className="btn btn-default" 
-                    style={styles.dontSaveButtonStyle}
-                    onClick={this.backToStartScreen} >
-                    <FaTimes/>
-                  </button>
-                </div>
-              </div>
-              
-              : null }
 
-              { this.state.getPlayerName ? 
-              <div>
-              <form onSubmit={this.sendScoreToServer}>
-                <label>
-                  Name:
-                  <input type="text" value={this.state.value} />
-                </label>
-                <input type="submit" value="Submit" />
-              </form>
-              </div>  
-              : null }
-            
-            <canvas ref="canvas" 
-              className="col" 
+
+                {this.state.selectingToSave ?
+                  <div className="text-center">
+                    <h3>Save to server?</h3>
+                    <button
+                      className="btn btn-default"
+                      style={styles.saveScoreButtonStyle}
+                      onClick={this.sendScoreToServer} >
+                      <FaCheck />
+                    </button>
+                    <button
+                      className="btn btn-default"
+                      style={styles.dontSaveButtonStyle}
+                      onClick={this.backToStartScreen} >
+                      <FaTimes />
+                    </button>
+                  </div> : null}
+
+
+              </div>
+
+              : null}
+
+            {this.state.gameRunning ?
+              <div>{this.state.playerName} for the win!</div>
+              : null}
+
+            <canvas ref="canvas"
+              className="col"
               width={this.state.canvasWidth}
               height={this.state.canvasHeight}
-              style={styles.canvasStyle}/>
-            
+              style={styles.canvasStyle} />
+
           </div>
-          
-          {<NextPieceDisplay 
-             points={this.state.points}
-             lines={this.state.lines}
-             level={this.state.level}
-             board={makeGameArray(5,5)}
-             piece={this.state.nextPieceDisplay}
-             drawSquare = {this.drawSquare}/>
+
+          {<NextPieceDisplay
+            points={this.state.points}
+            lines={this.state.lines}
+            level={this.state.level}
+            board={makeGameArray(5, 5)}
+            piece={this.state.nextPieceDisplay}
+            drawSquare={this.drawSquare} />
           }
         </div>
       </div>

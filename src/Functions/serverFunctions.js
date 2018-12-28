@@ -1,36 +1,31 @@
 const fetch = require('node-fetch');
 
-const postScore = (score) => {
-  fetch('http://localhost:3000/', {
-          method: 'post',
-          body:    JSON.stringify(score),
-          headers: { 'Content-Type': 'application/json' },
-      })
-      .then(res => res.json())
-      .then((json) => {
-        // display the message from the server confirming the score
-        // was posted to the server 
+const postScore = (score, callback) => {
+  console.log('score: ')
+  console.log(score)
 
-        return json;
-      
-      });
+  return fetch('https://lit-ridge-56288.herokuapp.com/', { 
+    method: 'POST', 
+    body: JSON.stringify(score),
+    headers: {
+      "Content-type": "application/json"
+    }  
+  })
+  .then(res => res.json(), (err) => {console.log(err)}) // expecting a json response   
+  
 }
 
 const getScores = () => {
-  fetch('http://localhost:3000/scores', {
+ return fetch('https://lit-ridge-56288.herokuapp.com/scores', {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
     })
-    .then(res => res.json())
-    .then((json) => {
-
-      return json;
+    .then(res => res.json()) // expecting a json response
       
       // display the message from the server confirming the score
       // was posted to the server 
       // this.setState({ highScores: json.highScores})
 
-    });
 }
 
 
