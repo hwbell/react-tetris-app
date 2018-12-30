@@ -9,7 +9,8 @@ import './App.css';
 
 // components
 import NextPieceDisplay from './Components/NextPieceDisplay';
-
+import GameOver from './Components/GameOver';
+import StartGame from './Components/StartGame';
 // constants
 import constants from './Constants/gameConstants';
 
@@ -27,9 +28,6 @@ import {
   removeCompleteLines,
   getNewPieceFunction,
 } from './Functions/gamePlayFunctions';
-
-// get serverFunctions in shorthand
-import { postScore, getScores } from './Functions/serverFunctions';
 
 const getInitialState = () => {
   var initialStateObj = {
@@ -51,9 +49,8 @@ const getInitialState = () => {
     gameLost: false,
     gameRunning: false,
     showSuccessfulSave: false,
-    playerName: ''
+    playerName: '',
   };
-
   // get two random piece functions to assign the first pieces
   let pieceFunction = getNewPieceFunction();
   let nextPieceFunction = getNewPieceFunction();
@@ -79,11 +76,10 @@ class GameSpace extends React.Component {
     this.getPlayerName = this.getPlayerName.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.sendScoreToServer = this.sendScoreToServer.bind(this);
-
   }
 
   componentWillMount() {
-    this.setState(getInitialState())
+    this.setState(getInitialState());
   }
 
   componentDidMount() {
@@ -441,29 +437,19 @@ class GameSpace extends React.Component {
       level: this.state.level
     }
 
-    fetch('https://lit-ridge-56288.herokuapp.com/', { 
-      method: 'POST', 
+    fetch('https://lit-ridge-56288.herokuapp.com/', {
+      method: 'POST',
       body: JSON.stringify(score),
       headers: {
         "Content-type": "application/json"
-      }  
+      }
     })
-    .then(res => res.json())
-    .then((json) => {
-      console.log(json)
-      self.setState(getInitialState());
-    });
+      .then(res => res.json())
+      .then((json) => {
+        console.log(json)
+        self.setState(getInitialState());
+      });
 
-    // postScore(self, {
-    //   name: this.state.playerName,
-    //   score: this.state.score,
-    //   lines: this.state.lines,
-    //   level: this.state.level
-    // }, (res) => {
-    //   console.log(res);
-      
-    // });
-    
   }
 
   render() {
@@ -476,66 +462,27 @@ class GameSpace extends React.Component {
         <div className="text-center row" style={styles.gameContainerStyle}  >
 
           {!this.state.gameRunning ?
-            <div className="game-start-buttons" style={styles.startGameContainerStyle}>
-
-              <form onSubmit={this.startGame}>
-                <label>
-
-                  <input
-                    type="text"
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    style={styles.submitNameStyle}
-                  />
-                </label>
-                <input
-                  type="submit"
-                  value="New Game"
-                  style={styles.startGameButtonStyle}
-                />
-              </form>
-
-
-            </div>
+            <StartGame
+              startGame={this.startGame}
+              handleChange={this.handleChange}
+              value={this.state.value}
+            />
             : null}
-
+          
           <div ref="canvasHolder"
             className="text-center canvasHolder"
             style={styles.canvasHolderStyle}
             onKeyDown={(e) => this.handleKeyPress(e)}
             tabIndex="0">
 
-
-
             {this.state.gameLost ?
-              <div className="col game-over-container" style={styles.gameLostNoticeStyle}>
-                <p style={styles.gameLostText}>Game Over <FaFrown /></p>
-                <p>Level Reached: {this.state.level}</p>
-                <p>Lines: {this.state.lines}</p>
-                <p>Points: {this.state.points}</p>
-
-
-                {this.state.selectingToSave ?
-                  <div className="text-center">
-                    <h3>Save to server?</h3>
-                    <button
-                      className="btn btn-default"
-                      style={styles.saveScoreButtonStyle}
-                      onClick={this.sendScoreToServer} >
-                      <FaCheck />
-                    </button>
-                    <button
-                      className="btn btn-default"
-                      style={styles.dontSaveButtonStyle}
-                      onClick={this.backToStartScreen} >
-                      <FaTimes />
-                    </button>
-                  </div> : null}
-
-
-              </div>
-
-              : null}
+              <GameOver
+                level={this.state.level}
+                lines={this.state.lines}
+                points={this.state.points}
+                sendScoreToServer={this.sendScoreToServer}
+                backToStartScreen={this.backToStartScreen}
+              /> : null}
 
             {this.state.gameRunning ?
               <div>{this.state.playerName} for the win!</div>
@@ -557,6 +504,8 @@ class GameSpace extends React.Component {
             piece={this.state.nextPieceDisplay}
             drawSquare={this.drawSquare} />
           }
+          
+
         </div>
       </div>
     )

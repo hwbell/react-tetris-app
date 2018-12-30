@@ -1,9 +1,9 @@
 const styles = {
   displayDivStyle: {
-    // border: '1px solid red',
+    //border: '1px solid red',
     borderRadius: 10,
     // width: 300,
-    marginTop: 30,
+    marginTop: 40,
     marginHorizontal: 0,
     padding: 0
   },
@@ -15,8 +15,23 @@ const styles = {
     fontFamily: 'Courier',
   },
   canvasStyle: {
-    marginBottom: 0,
-    backgroundColor: 'whitesmoke'
+    //border: '1px solid blue',
+    marginBottom: -12,
+    backgroundColor: 'whitesmoke',
+    width: 120,
+  },
+  refreshScoresButton: {
+    color: '#1A255C',
+    //backgroundColor: 'white',
+    fontSize: 12,
+    fontFamily: 'Courier',
+    fontWeight: '800',
+    //width: 130,
+    //height: 40,
+    marginTop: 10,
+    paddingTop: 4,
+    border: '4px solid white',
+    borderRadius: 14
   },
 }
 

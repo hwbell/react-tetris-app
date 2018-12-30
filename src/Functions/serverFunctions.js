@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const postScore = (score, callback) => {
+const postScore = (score) => {
   console.log('score: ')
   console.log(score)
 
@@ -11,7 +11,9 @@ const postScore = (score, callback) => {
       "Content-type": "application/json"
     }  
   })
-  .then(res => res.json(), (err) => {console.log(err)}) // expecting a json response   
+  .then(res => res.json(), (err) => {
+    console.log(err)
+  }) // expecting a json response   
   
 }
 

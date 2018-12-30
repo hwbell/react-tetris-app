@@ -13,7 +13,7 @@ const styles = {
   titleStyle: {
     color: 'black',
     fontFamily: 'Courier',
-    margin: 50,
+    marginTop: 50,
   },
   gameContainerStyle: {
     //border: '4px solid red',
@@ -50,7 +50,7 @@ const styles = {
     fontSize: 20,
     fontFamily: 'Courier',
     fontWeight: 'bold',
-    marginLeft: -startGameWidth / 2,
+    marginLeft: -startGameWidth*0.95,
     background: 'rgba(0,0,0,0.25)',
   },
 
