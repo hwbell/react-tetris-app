@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import styles from './App.styles';
 import './App.css';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 // components
 import NextPieceDisplay from './Components/NextPieceDisplay';
@@ -50,6 +51,8 @@ const getInitialState = () => {
     gameRunning: false,
     showSuccessfulSave: false,
     playerName: '',
+    sendingScore: false,
+    scoreSentSuccessfully: false,
   };
   // get two random piece functions to assign the first pieces
   let pieceFunction = getNewPieceFunction();
@@ -436,8 +439,12 @@ class GameSpace extends React.Component {
       lines: this.state.lines,
       level: this.state.level
     }
+    self.setState({
+      sendingScore: true,
+    });
 
-    fetch('https://lit-ridge-56288.herokuapp.com/', {
+    setTimeout ( () => {
+      fetch('https://lit-ridge-56288.herokuapp.com/', {
       method: 'POST',
       body: JSON.stringify(score),
       headers: {
@@ -447,8 +454,15 @@ class GameSpace extends React.Component {
       .then(res => res.json())
       .then((json) => {
         console.log(json)
-        self.setState(getInitialState());
+        self.setState({
+          scoreSentSuccessfully: true
+        });
+
+        setTimeout( () => {
+          self.setState(getInitialState());
+        }, 800)
       });
+    }, 800)
 
   }
 
@@ -461,32 +475,45 @@ class GameSpace extends React.Component {
 
         <div className="text-center row" style={styles.gameContainerStyle}  >
 
-          {!this.state.gameRunning ?
-            <StartGame
-              startGame={this.startGame}
-              handleChange={this.handleChange}
-              value={this.state.value}
-            />
-            : null}
-          
+
+            {!this.state.gameRunning ? // Display at the beginning before the game is in progress
+              <StartGame
+                startGame={this.startGame}
+                handleChange={this.handleChange}
+                value={this.state.value}
+              />
+              : null}
+
           <div ref="canvasHolder"
             className="text-center canvasHolder"
             style={styles.canvasHolderStyle}
             onKeyDown={(e) => this.handleKeyPress(e)}
             tabIndex="0">
 
-            {this.state.gameLost ?
-              <GameOver
-                level={this.state.level}
-                lines={this.state.lines}
-                points={this.state.points}
-                sendScoreToServer={this.sendScoreToServer}
-                backToStartScreen={this.backToStartScreen}
-              /> : null}
+            <ReactCSSTransitionGroup
+              transitionName="example"
+              transitionEnterTimeout={500}
+              transitionLeaveTimeout={300}>
 
-            {this.state.gameRunning ?
-              <div>{this.state.playerName} for the win!</div>
-              : null}
+              {this.state.gameLost ? // Display when the game is lost
+                <GameOver
+                  // props for game info
+                  level={this.state.level}
+                  lines={this.state.lines}
+                  points={this.state.points}
+
+                  // sendScoreToServer and backToStartScreen functions
+                  sendScoreToServer={this.sendScoreToServer}
+                  sendingScore={this.state.sendingScore} // will toggle when sending to server w/ func
+                  scoreSentSuccessfully={this.state.scoreSentSuccessfully}
+                  backToStartScreen={this.backToStartScreen}
+                /> : null}
+
+              {this.state.gameRunning ? // Show the player's name once they've started
+                <div>{this.state.playerName} for the win!</div>
+                : null}
+
+            </ReactCSSTransitionGroup>
 
             <canvas ref="canvas"
               className="col"
@@ -496,17 +523,16 @@ class GameSpace extends React.Component {
 
           </div>
 
-          {<NextPieceDisplay
+          <NextPieceDisplay
             points={this.state.points}
             lines={this.state.lines}
             level={this.state.level}
             board={makeGameArray(5, 5)}
             piece={this.state.nextPieceDisplay}
             drawSquare={this.drawSquare} />
-          }
-          
 
         </div>
+
       </div>
     )
   }

@@ -13,7 +13,8 @@ const styles = {
   titleStyle: {
     color: 'black',
     fontFamily: 'Courier',
-    marginTop: 50,
+    margin: 50,
+    
   },
   gameContainerStyle: {
     //border: '4px solid red',

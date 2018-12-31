@@ -7,12 +7,16 @@ const startGameWidth = canvasWidth * 0.4;
 const styles = {
   text: {
     marginTop: 10,
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    fontFamily: 'Courier',
   },
   startGameContainerStyle: {
     width: startGameWidth,
     position: 'absolute',
     left: '50%',
-    top: '50%',
+    top: '35%',
     borderRadius: 15,
     zIndex: 1,
     color: 'white',
@@ -23,6 +27,9 @@ const styles = {
     background: 'rgba(0,0,0,0.25)',
   },
   inputForm: {
+    
+  },
+  inputFormLabel: {
     marginTop: -10,
     marginBottom: -10,
   },

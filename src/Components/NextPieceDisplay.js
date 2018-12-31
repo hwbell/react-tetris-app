@@ -1,9 +1,9 @@
 import React from 'react';
 
-//import logo from './logo.svg';
+// set stylesheet, import bootstrap and css transitions
 import styles from './NextPieceDisplay.styles';
-
 import 'bootstrap/dist/css/bootstrap.css';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import constants from '../Constants/gameConstants';
 
@@ -14,6 +14,7 @@ class NextPieceDisplay extends React.Component {
     super(props);
 
     this.getHighScores = this.getHighScores.bind(this);
+
     this.state = {
       piece: this.props.piece,
     };
@@ -25,7 +26,7 @@ class NextPieceDisplay extends React.Component {
     this.drawCanvas();
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.getHighScores();
   }
 
@@ -59,8 +60,8 @@ class NextPieceDisplay extends React.Component {
 
   }
 
-  getHighScores () {
-    const self = this;
+  getHighScores() {
+    //const self = this;
     fetch('https://lit-ridge-56288.herokuapp.com/scores', {
       method: 'GET',
       headers: {
@@ -70,7 +71,7 @@ class NextPieceDisplay extends React.Component {
       .then(res => res.json())
       .then((json) => {
         console.log(json)
-        self.setState({
+        this.setState({
           scores: json.data,
         });
       });
@@ -82,7 +83,7 @@ class NextPieceDisplay extends React.Component {
 
     return (
       <div className="text-center" style={styles.displayDivStyle}>
-      
+
         <p style={styles.text}>Next: </p>
         <canvas ref="canvas"
           width={constants.nextPieceDisplaySize}
@@ -93,20 +94,20 @@ class NextPieceDisplay extends React.Component {
         <p style={styles.text}>Lines: {this.props.lines}</p>
         <p style={styles.text}>Level: {this.props.level}</p>
 
-        { // will display once this.state.highScores(in app.js) exists
-          this.state.scores ?
-            <HighScores
-              scores={this.state.scores}
-            /> 
-          : null
-        }
+          { // will display once this.state.highScores(in app.js) exists
+            this.state.scores ?
+              <HighScores
+                scores={this.state.scores}
+              />
+              : null
+          }
 
-        <button 
+        <button
           style={styles.refreshScoresButton}
           onClick={this.getHighScores}
-          >refresh
+        >refresh
         </button>
-        
+
       </div>
     )
   }

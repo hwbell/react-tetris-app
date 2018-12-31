@@ -39,7 +39,7 @@ class StartGame extends React.Component {
         <p style={styles.text}>Enter a name</p>
         
         <form style={styles.inputForm} onSubmit={this.props.startGame}>
-          <label>
+          <label style={styles.inputFormLabel}>
             <input
               type="text"
               value={this.props.value}

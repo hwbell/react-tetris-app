@@ -3,7 +3,7 @@ import React from 'react';
 // styling
 import styles from './HighScores.styles';
 
-// bootstrap
+// bootstrap and transitions
 import 'bootstrap/dist/css/bootstrap.css';
 
 // constants
@@ -33,26 +33,26 @@ class HighScores extends React.Component {
 
   render() {
  //console.log(this.props.scores);
-    let key = 0;
+    let items = this.props.scores.map((score, index) => {
+      if (index > 10) {
+        return null;
+      }
+      else {
+        return (
+
+          <div key={index} style={styles.textContainer} className="text-center row">
+            <p style={styles.text}>{score.name}: </p>
+            <p style={styles.score}>{score.score}</p>
+          </div>
+        )
+      }
+    });
+    
     return (
+
       <div className="text-center" style={styles.containerStyle}>
         <p style={styles.title}>High Scores</p>
-        {
-          this.props.scores.map((score) => {
-            key++;
-            if (key > 10) {
-              return null;
-            }
-            else {
-              return (
-                <div key={key} style={styles.textContainer} className="text-center row">
-                  <p style={styles.text}>{score.name}: </p>
-                  <p style={styles.score}>{score.score}</p>
-                </div>
-              )
-            }
-          })
-        }
+        {items}
 
       </div>
     )

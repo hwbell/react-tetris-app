@@ -23,6 +23,7 @@ const styles = {
   gameLostMajorText: {
     fontSize: 18,
     marginTop: 15,
+    marginBottom: 10,
   },
   gameLostMinorText: {
     fontSize: 14,
