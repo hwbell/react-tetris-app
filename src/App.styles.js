@@ -7,12 +7,11 @@ const startGameWidth = canvasWidth * 0.5;
 const styles = { 
   mainContainerStyle: {
     height: 50/*Title Margin */ + constants.squareSize*constants.gameHeight*1.2,
-    //border: '4px solid yellow',
+    // backgroundColor: 'black',
     borderRadius: 30,
   },
   titleStyle: {
     color: 'black',
-    fontFamily: 'Courier',
     margin: 50,
     
   },
@@ -30,7 +29,6 @@ const styles = {
     //   outline: none,
   },
   canvasStyle: {
-    backgroundColor: 'whitesmoke',
     // border: '4px solid brown',
     // borderRadius: 24,
     padding: 0,
@@ -49,7 +47,6 @@ const styles = {
     zIndex: 1,
     color: 'white',
     fontSize: 20,
-    fontFamily: 'Courier',
     fontWeight: 'bold',
     marginLeft: -startGameWidth*0.95,
     background: 'rgba(0,0,0,0.25)',
@@ -59,7 +56,6 @@ const styles = {
     color: '#1A255C',
     //backgroundColor: 'white',
     fontSize: 18,
-    fontFamily: 'Courier',
     fontWeight: '800',
     width: 130,
     height: 40,
@@ -78,7 +74,6 @@ const styles = {
     zIndex: 1,
     color: 'white',
     fontSize: 15,
-    fontFamily: 'Courier',
     fontWeight: 'bold',
     marginLeft: -gameLostNoticeWidth / 2,
     background: 'rgba(0,0,0,0.65)',

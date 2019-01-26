@@ -49,7 +49,7 @@ class StartGame extends React.Component {
           </label>
           <input
             type="submit"
-            value="play"
+            value="lets go!"
             style={styles.startGameButtonStyle}
           />
         </form>

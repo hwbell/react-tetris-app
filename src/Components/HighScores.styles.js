@@ -17,7 +17,6 @@ const styles = {
     color: 'black',
     fontWeight: 'bold',
     fontSize: 12,
-    fontFamily: 'Courier',
     marginRight: 10,
     marginLeft: 15,
   },
@@ -25,7 +24,6 @@ const styles = {
     color: 'blue',
     fontWeight: 'bold',
     fontSize: 12,
-    fontFamily: 'Courier',
     marginRight: 10,
     marginLeft: 15,
     

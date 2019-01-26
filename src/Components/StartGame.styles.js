@@ -10,7 +10,6 @@ const styles = {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
-    fontFamily: 'Courier',
   },
   startGameContainerStyle: {
     width: startGameWidth,
@@ -21,7 +20,6 @@ const styles = {
     zIndex: 1,
     color: 'white',
     fontSize: 20,
-    fontFamily: 'Courier',
     fontWeight: 'bold',
     marginLeft: -startGameWidth*1.05,
     background: 'rgba(0,0,0,0.25)',
@@ -47,10 +45,8 @@ const styles = {
     color: '#1A255C',
     //backgroundColor: 'white',
     fontSize: 14,
-    fontFamily: 'Courier',
     fontWeight: '800',
     margin: 20,
-    paddingTop: 4,
     border: '4px solid white',
     borderRadius: 14
   },

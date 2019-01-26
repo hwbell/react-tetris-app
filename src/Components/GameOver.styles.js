@@ -15,7 +15,6 @@ const styles = {
     zIndex: 1,
     color: 'white',
     fontSize: 15,
-    fontFamily: 'Courier',
     fontWeight: 'bold',
     marginLeft: -gameLostNoticeWidth / 2,
     background: 'rgba(0,0,0,0.65)',
@@ -27,7 +26,6 @@ const styles = {
   },
   gameLostMinorText: {
     fontSize: 14,
-    marginTop: 15,
   },
 
 

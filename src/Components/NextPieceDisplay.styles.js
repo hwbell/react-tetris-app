@@ -12,7 +12,6 @@ const styles = {
     color: 'black',
     fontWeight: 'bold',
     fontSize: 16,
-    fontFamily: 'Courier',
   },
   canvasStyle: {
     //border: '1px solid blue',
@@ -22,16 +21,12 @@ const styles = {
   },
   refreshScoresButton: {
     color: '#1A255C',
-    //backgroundColor: 'white',
-    fontSize: 12,
-    fontFamily: 'Courier',
+    fontSize: 18,
     fontWeight: '800',
-    //width: 130,
-    //height: 40,
     marginTop: 10,
-    paddingTop: 4,
-    border: '4px solid white',
-    borderRadius: 14
+    paddingTop: 10,
+    borderRadius: 14,
+    border: 'none'
   },
 }
 

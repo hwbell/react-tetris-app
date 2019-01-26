@@ -88,7 +88,7 @@ class GameOver extends React.Component {
 
         {this.state.sendingScore && sendInProgress() }
 
-        {this.state.scoreSent && scoreSent() }
+        {this.state.scoreSentSuccessfully && scoreSent() }
 
       </div>
     )
