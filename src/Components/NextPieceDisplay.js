@@ -103,12 +103,12 @@ class NextPieceDisplay extends React.Component {
               : null
           }
 
-        <button
+        {/* <button
           style={styles.refreshScoresButton}
           onClick={this.getHighScores}>
           <MaterialIcon icon="refresh" size='medium' />
 
-        </button>
+        </button> */}
 
       </div>
     )

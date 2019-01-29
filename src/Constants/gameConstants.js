@@ -13,6 +13,10 @@ const canvasHeight = squareSize*gameHeight + squareSize;
 // define nextPieceDisplay size accoring to squareSize. This will be a square so just need one number
 const nextPieceDisplaySize = squareSize*5 + squareSize;
 
+
+// colors for body
+const bodyColor = '#3498DB'
+
 // colors for GameSquares
 const backgroundColor = '#EAF2F8';
 const borderColor = 'whitesmoke';
@@ -42,7 +46,8 @@ const constants = {
   nextPieceDisplaySize,
   backgroundColor,
   borderColor,
-  squareColors
+  squareColors,
+  bodyColor
 }
 
 export default constants;

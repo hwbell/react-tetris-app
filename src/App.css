@@ -3,15 +3,23 @@
 body {
   font-family: Quicksand;
   background-color: whitesmoke;
+  color: #1565C0;
 }
 
 .canvasHolder:focus {
   outline: none;
 }
 
+.btn {
+  background-color:#3498DB;
+  color:whitesmoke;
+  margin: 10px;
+  font-size: 16px;
+  font-weight: bolder;
+}
 .btn:hover {
-  color: black;
-  background-color: whitesmoke;
+  color: rgb(26, 149, 206);
+  background-color: #E0F7FA;
 }
 
 input:focus {

@@ -5,12 +5,6 @@ const gameLostNoticeWidth = canvasWidth * 0.5;
 const startGameWidth = canvasWidth * 0.4;
 
 const styles = {
-  text: {
-    marginTop: 10,
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
   startGameContainerStyle: {
     width: startGameWidth,
     position: 'absolute',
@@ -19,10 +13,14 @@ const styles = {
     borderRadius: 15,
     zIndex: 1,
     color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
     marginLeft: -startGameWidth*1.05,
-    background: 'rgba(0,0,0,0.25)',
+    backgroundColor: `${constants.bodyColor}`
+  },
+  text: {
+    marginTop: 10,
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
   },
   inputForm: {
     
@@ -33,10 +31,11 @@ const styles = {
   },
   submitNameStyle: {
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 16,
     margin: 10,
     padding: 4,
-    width: 140,
+    width: '90%',
+    backgroundColor: 'whitesmoke',
     border: '1px solid whitesmoke',
     borderRadius: 10,
   },
@@ -44,7 +43,7 @@ const styles = {
   startGameButtonStyle: {
     color: '#1A255C',
     //backgroundColor: 'white',
-    fontSize: 14,
+    fontSize: 1,
     fontWeight: '800',
     margin: 20,
     border: '4px solid white',

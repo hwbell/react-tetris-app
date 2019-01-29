@@ -13,7 +13,7 @@ const styles = {
     left: '50%',
     top: '25%',
     zIndex: 1,
-    color: 'white',
+    color: 'whitesmoke',
     fontSize: 15,
     fontWeight: 'bold',
     marginLeft: -gameLostNoticeWidth / 2,

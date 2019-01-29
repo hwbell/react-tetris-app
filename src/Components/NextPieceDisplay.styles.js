@@ -1,3 +1,5 @@
+import constants from '../Constants/gameConstants';
+
 const styles = {
   displayDivStyle: {
     //border: '1px solid red',
@@ -9,7 +11,6 @@ const styles = {
   },
   text: {
     margin: 0,
-    color: 'black',
     fontWeight: 'bold',
     fontSize: 16,
   },

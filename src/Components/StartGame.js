@@ -6,13 +6,8 @@ import styles from './StartGame.styles';
 // bootstrap
 import 'bootstrap/dist/css/bootstrap.css';
 
-// constants
-import constants from '../Constants/gameConstants';
-
-// icons
-import { FaTimes } from 'react-icons/fa';
-import { FaCheck } from 'react-icons/fa';
-import { FaFrown } from 'react-icons/fa';
+// // constants
+// import constants from '../Constants/gameConstants';
 
 class StartGame extends React.Component {
   constructor(props) {
@@ -36,8 +31,8 @@ class StartGame extends React.Component {
     return (
       <div className="game-start-buttons" style={styles.startGameContainerStyle}>
         
-        <p style={styles.text}>Enter a name</p>
-        
+        <p style={styles.text}>Your name, if you please  <i className="fa fa-smile"></i></p>
+
         <form style={styles.inputForm} onSubmit={this.props.startGame}>
           <label style={styles.inputFormLabel}>
             <input
@@ -47,10 +42,9 @@ class StartGame extends React.Component {
               style={styles.submitNameStyle}
             />
           </label>
-          <input
+          <input className="btn btn-sm"
             type="submit"
             value="lets go!"
-            style={styles.startGameButtonStyle}
           />
         </form>
 

@@ -15,10 +15,7 @@ import StartGame from './Components/StartGame';
 // constants
 import constants from './Constants/gameConstants';
 
-// icons
-import { FaTimes } from 'react-icons/fa';
-import { FaCheck } from 'react-icons/fa';
-import { FaFrown } from 'react-icons/fa';
+// modules
 
 
 // get gamePlayFunctions in shorthand
@@ -46,7 +43,6 @@ const getInitialState = () => {
     lines: 0,
     points: 0,
     level: 1,
-    score: 0,
     gameLost: false,
     gameRunning: false,
     showSuccessfulSave: false,
@@ -69,7 +65,7 @@ const getInitialState = () => {
   return initialStateObj;
 }
 
-class GameSpace extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props)
     // this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -435,7 +431,7 @@ class GameSpace extends React.Component {
     const self = this;
     const score = {
       name: this.state.playerName,
-      score: this.state.score,
+      score: this.state.points,
       lines: this.state.lines,
       level: this.state.level
     }
@@ -460,9 +456,9 @@ class GameSpace extends React.Component {
 
         setTimeout( () => {
           self.setState(getInitialState());
-        }, 800)
+        }, 1000)
       });
-    }, 800)
+    }, 1000)
 
   }
 
@@ -475,7 +471,7 @@ class GameSpace extends React.Component {
 
         <div className="text-center row" style={styles.gameContainerStyle}  >
 
-
+        
             {!this.state.gameRunning ? // Display at the beginning before the game is in progress
               <StartGame
                 startGame={this.startGame}
@@ -501,10 +497,10 @@ class GameSpace extends React.Component {
                   level={this.state.level}
                   lines={this.state.lines}
                   points={this.state.points}
-
-                  // sendScoreToServer and backToStartScreen functions
                   sendScoreToServer={this.sendScoreToServer}
                   sendingScore={this.state.sendingScore} // will toggle when sending to server w/ func
+
+                  // sendScoreToServer and backToStartScreen functions
                   scoreSentSuccessfully={this.state.scoreSentSuccessfully}
                   backToStartScreen={this.backToStartScreen}
                 /> : null}
@@ -538,4 +534,4 @@ class GameSpace extends React.Component {
   }
 }
 
-export default GameSpace;
+export default App;

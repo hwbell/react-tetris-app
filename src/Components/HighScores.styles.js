@@ -14,14 +14,12 @@ const styles = {
     fontSize: 15,
   },
   text: {
-    color: 'black',
     fontWeight: 'bold',
     fontSize: 12,
     marginRight: 10,
     marginLeft: 15,
   },
   score: {
-    color: 'blue',
     fontWeight: 'bold',
     fontSize: 12,
     marginRight: 10,
