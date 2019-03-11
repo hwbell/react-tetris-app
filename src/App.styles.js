@@ -12,7 +12,7 @@ const styles = {
   },
   titleStyle: {
     margin: 'auto',
-    marginTop: 40,
+    margin: 40,
     
   },
   gameContainerStyle: {
