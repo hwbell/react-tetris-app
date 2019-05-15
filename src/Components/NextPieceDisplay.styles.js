@@ -10,7 +10,7 @@ const styles = {
     padding: 0
   },
   text: {
-    margin: 0,
+    marginTop: 5,
     fontWeight: 'bold',
     fontSize: 16,
   },
