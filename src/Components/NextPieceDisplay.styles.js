@@ -2,32 +2,28 @@ import constants from '../Constants/gameConstants';
 
 const styles = {
   displayDivStyle: {
-    //border: '1px solid red',
-    borderRadius: 10,
-    // width: 300,
-    marginTop: 40,
-    marginHorizontal: 0,
-    padding: 0
+    marginTop: '10px',
+    // border: '1px solid white',
+    // height: '650px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
   },
   text: {
-    marginTop: 5,
-    fontWeight: 'bold',
+    marginHorizontal: 5,
+    padding: 0,
     fontSize: 16,
+  },
+  smallText: {
+    fontWeight: 'bold',
+    fontSize: 10,
   },
   canvasStyle: {
     //border: '1px solid blue',
-    marginBottom: -12,
-    backgroundColor: 'whitesmoke',
+    // marginBottom: -12,
+    // backgroundColor: 'whitesmoke',
     width: 120,
-  },
-  refreshScoresButton: {
-    color: '#1A255C',
-    fontSize: 18,
-    fontWeight: '800',
-    marginTop: 10,
-    paddingTop: 10,
-    borderRadius: 14,
-    border: 'none'
   },
 }
 

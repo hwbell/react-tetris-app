@@ -4,30 +4,20 @@ const styles = {
     //borderRadius: 10,
     //width: 250,
     // height: 300,
-    marginTop: 50
+    marginTop: 10
   },
   textContainer: {
-    marginTop: -10,
+    // marginTop: -10,
   },
   title: {
     fontWeight: 'bold',
     fontSize: 15,
   },
   text: {
-    fontWeight: 'bold',
+    margin: 0,
+    padding: 0,
+    // fontWeight: 'bold',
     fontSize: 12,
-    marginRight: 10,
-    marginLeft: 15,
-  },
-  score: {
-    fontWeight: 'bold',
-    fontSize: 12,
-    marginRight: 10,
-    marginLeft: 15,
-    
-  },
-  canvasStyle: {
-    backgroundColor: '#020825'
   },
   
 }

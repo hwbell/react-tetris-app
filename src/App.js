@@ -75,6 +75,7 @@ class App extends React.Component {
     this.getPlayerName = this.getPlayerName.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.sendScoreToServer = this.sendScoreToServer.bind(this);
+    this.getHighScores = this.getHighScores.bind(this);
   }
 
   componentWillMount() {
@@ -84,6 +85,7 @@ class App extends React.Component {
   componentDidMount() {
     console.log("mounted");
     this.redrawCanvas();
+    this.getHighScores();
   }
 
   focusDiv(selector) {
@@ -430,7 +432,7 @@ class App extends React.Component {
   sendScoreToServer() {
     const self = this;
     const score = {
-      name: this.state.playerName,
+      name: this.state.playerName || 'unknown',
       score: this.state.points,
       lines: this.state.lines,
       level: this.state.level
@@ -456,16 +458,34 @@ class App extends React.Component {
 
         setTimeout( () => {
           self.setState(getInitialState());
+          self.getHighScores();
         }, 1000)
       });
     }, 1000)
 
   }
 
+  getHighScores() {
+    //const self = this;
+    fetch('https://lit-ridge-56288.herokuapp.com/scores', {
+      method: 'GET',
+      headers: {
+        "Content-type": "application/json"
+      }
+    })
+      .then(res => res.json())
+      .then((json) => {
+        console.log(json)
+        this.setState({
+          highScores: json.data,
+        });
+      });
+  }
+
   render() {
 
     return (
-      <div className="text-center container-fluid" style={styles.mainContainerStyle}>
+      <div className="container-fluid" style={styles.mainContainerStyle}>
 
         <h1 className="text-center" style={styles.titleStyle}>Tetris</h1>
 
@@ -481,7 +501,7 @@ class App extends React.Component {
               : null}
 
           <div ref="canvasHolder"
-            className="text-center canvasHolder"
+            className="col-sm-8 canvasHolder"
             style={styles.canvasHolderStyle}
             onKeyDown={(e) => this.handleKeyPress(e)}
             tabIndex="0">
@@ -512,7 +532,8 @@ class App extends React.Component {
             </ReactCSSTransitionGroup>
 
             <canvas ref="canvas"
-              className="col"
+              id="canvas"
+              
               width={this.state.canvasWidth}
               height={this.state.canvasHeight}
               style={styles.canvasStyle} />
@@ -520,6 +541,7 @@ class App extends React.Component {
           </div>
 
           <NextPieceDisplay
+            highScores={this.state.highScores}
             points={this.state.points}
             lines={this.state.lines}
             level={this.state.level}

@@ -32,7 +32,7 @@ class HighScores extends React.Component {
   }
 
   render() {
- //console.log(this.props.scores);
+    //console.log(this.props.scores);
     let items = this.props.scores.map((score, index) => {
       if (index > 10) {
         return null;
@@ -41,17 +41,19 @@ class HighScores extends React.Component {
         return (
 
           <div key={index} style={styles.textContainer} className="text-center row">
-            <p style={styles.text}>{score.name}: </p>
-            <p style={styles.score}>{score.score}</p>
+            <p style={styles.text}>{`${score.name}:  ${score.score}`} </p>
           </div>
         )
       }
     });
-    
+
     return (
 
       <div className="text-center" style={styles.containerStyle}>
-        <p style={styles.title}>High Scores</p>
+        <div className="row">
+          <p style={styles.title}>High Scores</p>
+          {/* <i className="fas fa-redo" style={{color: 'white', padding: 10}}></i> */}
+        </div>
         {items}
 
       </div>

@@ -2,24 +2,24 @@ import constants from '../Constants/gameConstants';
 
 const canvasWidth = 450
 const gameLostNoticeWidth = canvasWidth * 0.5;
-const startGameWidth = canvasWidth * 0.4;
+const startGameWidth = 260;
 
 const styles = {
   startGameContainerStyle: {
     width: startGameWidth,
     position: 'absolute',
     left: '50%',
-    top: '35%',
+    top: '40%',
     borderRadius: 15,
     zIndex: 1,
     color: 'white',
-    marginLeft: -startGameWidth*1.05,
-    backgroundColor: `${constants.bodyColor}`
+    marginLeft: -startGameWidth/2,
+    background: 'rgba(0,0,0,0.85)',
   },
   text: {
     marginTop: 10,
     color: 'white',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     fontSize: 18,
   },
   inputForm: {

@@ -16,14 +16,14 @@ const styles = {
     
   },
   gameContainerStyle: {
-    //border: '4px solid red',
     borderRadius: 30,
-    width: 600,
+    // width: 600,
     margin: '0 auto'
   },
   canvasHolderStyle: {
-    position: 'relative',
+    // margin: 10,
     borderRadius: 30,
+    // backgroundColor: 'white'
     //border: '4px solid brown',
     // focus
     //   outline: none,
@@ -31,6 +31,8 @@ const styles = {
   canvasStyle: {
     // border: '4px solid brown',
     // borderRadius: 24,
+    // backgroundColor: 'blue',
+    margin: 0,
     padding: 0,
     width: constants.canvasWidth+25,
     minWidth: constants.canvasWidth+25,

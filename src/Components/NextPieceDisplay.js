@@ -8,13 +8,13 @@ import constants from '../Constants/gameConstants';
 
 import HighScores from './HighScores';
 
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+import Loader from 'react-loader-spinner'
 
 class NextPieceDisplay extends React.Component {
   constructor(props) {
     super(props);
 
-    this.getHighScores = this.getHighScores.bind(this);
+    // this.getHighScores = this.getHighScores.bind(this);
 
     this.state = {
       piece: this.props.piece,
@@ -28,7 +28,7 @@ class NextPieceDisplay extends React.Component {
   }
 
   componentWillMount() {
-    this.getHighScores();
+    // this.getHighScores();
   }
 
   componentDidMount() {
@@ -61,29 +61,12 @@ class NextPieceDisplay extends React.Component {
 
   }
 
-  getHighScores() {
-    //const self = this;
-    fetch('https://lit-ridge-56288.herokuapp.com/scores', {
-      method: 'GET',
-      headers: {
-        "Content-type": "application/json"
-      }
-    })
-      .then(res => res.json())
-      .then((json) => {
-        console.log(json)
-        this.setState({
-          scores: json.data,
-        });
-      });
-  }
-
   render() {
     //console.log("rendering");
     //console.log(this.props.highScores);
 
     return (
-      <div className="text-center" style={styles.displayDivStyle}>
+      <div className="col-sm-2" style={styles.displayDivStyle}>
 
         <p style={styles.text}>Next: </p>
         <canvas ref="canvas"
@@ -91,17 +74,29 @@ class NextPieceDisplay extends React.Component {
           height={constants.nextPieceDisplaySize}
           style={styles.canvasStyle}
         />
-        <p style={styles.text}>Score: {this.props.points}</p>
-        <p style={styles.text}>Lines: {this.props.lines}</p>
-        <p style={styles.text}>Level: {this.props.level}</p>
+        <div>
+          <p style={styles.text}>Score: {this.props.points}</p>
+          <p style={styles.text}>Lines: {this.props.lines}</p>
+          <p style={styles.text}>Level: {this.props.level}</p>
+        </div>
+        { // will display once this.state.highScores(in app.js) exists
+          this.props.highScores ?
+            <HighScores
+              scores={this.props.highScores}
+            />
+            :
+            <div className="" role="status">
 
-          { // will display once this.state.highScores(in app.js) exists
-            this.state.scores ?
-              <HighScores
-                scores={this.state.scores}
+              <p style={styles.smallText}>loading high scores...</p>
+              <Loader
+                type="ThreeDots"
+                color="#00BFFF"
+                height="50"
+                width="50"
               />
-              : null
-          }
+
+            </div>
+        }
 
         {/* <button
           style={styles.refreshScoresButton}

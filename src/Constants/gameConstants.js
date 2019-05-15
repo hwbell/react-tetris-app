@@ -4,7 +4,7 @@ const gameHeight = 24;
 
 
 // define the width/height of squares, in pixels
-const squareSize = 25;
+const squareSize = 20;
 
 // define canvas size according to squaresize
 const canvasWidth = squareSize*gameWidth + squareSize;
@@ -18,8 +18,8 @@ const nextPieceDisplaySize = squareSize*5 + squareSize;
 const bodyColor = '#3498DB'
 
 // colors for GameSquares
-const backgroundColor = '#EAF2F8';
-const borderColor = 'whitesmoke';
+const backgroundColor = 'white';
+const borderColor = 'black';
 
 // define colorset
 //  - a function from gamePlayFunctions will pull one randomly for each move 

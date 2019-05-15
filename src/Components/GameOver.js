@@ -13,7 +13,7 @@ import constants from '../Constants/gameConstants';
 import { FaTimes } from 'react-icons/fa';
 import { FaCheck } from 'react-icons/fa';
 import { FaFrown } from 'react-icons/fa';
-import { FaSpinner } from 'react-icons/fa';
+import Loader from 'react-loader-spinner'
 
 // jsx elemements (too small to make components, I think)
 const askToSend = (props) => {
@@ -44,7 +44,12 @@ const sendInProgress = () => {
   return (
     <div className="text-center">
       <p style={styles.gameLostMajorText}>Sending ... </p>
-      <FaSpinner style={{ marginBottom: 10 }} />
+      <Loader
+        type="ThreeDots"
+        color="#00BFFF"
+        height="25"
+        width="25"
+      />
     </div>
   )
 }
@@ -62,15 +67,15 @@ class GameOver extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sendingScore: this.props.sendingScore,
+      // sendingScore: this.props.sendingScore,
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      sendingScore: nextProps.sendingScore,
-      scoreSentSuccessfully: nextProps.scoreSentSuccessfully,
-    })
+    // this.setState({
+    //   sendingScore: nextProps.sendingScore,
+    //   scoreSentSuccessfully: nextProps.scoreSentSuccessfully,
+    // })
   }
 
   componentDidMount() {
@@ -84,11 +89,11 @@ class GameOver extends React.Component {
     return (
       <div className="col game-over-container" style={styles.gameLostNoticeStyle}>
 
-        {!this.state.sendingScore && askToSend(this.props) }
+        {!this.props.sendingScore && askToSend(this.props)}
 
-        {this.state.sendingScore && sendInProgress() }
+        {this.props.sendingScore && sendInProgress()}
 
-        {this.state.scoreSentSuccessfully && scoreSent() }
+        {this.props.scoreSentSuccessfully && scoreSent()}
 
       </div>
     )

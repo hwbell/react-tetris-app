@@ -31,7 +31,7 @@ class StartGame extends React.Component {
     return (
       <div className="game-start-buttons" style={styles.startGameContainerStyle}>
         
-        <p style={styles.text}>Your name, if you please  <i className="fa fa-smile"></i></p>
+        <p style={styles.text}>Your name, if you please (optional)  <i className="fa fa-smile"></i></p>
 
         <form style={styles.inputForm} onSubmit={this.props.startGame}>
           <label style={styles.inputFormLabel}>
